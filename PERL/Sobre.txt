@@ -1,0 +1,5 @@
+Bibliotecas são chamadas de módulos
+Sebesta: Linguagem de script
+Hibrida: É pré compilada para detectar erros e isso "facilita" o trabalho do compilador
+Derivada de SNOBOL e awk, duas linguagens bastante voltadas para processamento de texto
+Variáveis: tipo estático e declaração implícita
