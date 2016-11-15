@@ -3,3 +3,39 @@ Sebesta: Linguagem de script
 Hibrida: É pré compilada para detectar erros e isso "facilita" o trabalho do compilador
 Derivada de SNOBOL e awk, duas linguagens bastante voltadas para processamento de texto
 Variáveis: tipo estático e declaração implícita
+
+
+#Single line comment
+
+=begin comment
+This is all part of multiline comment.
+You can use as many lines as you like
+These comments will be ignored by the 
+compiler until the next =cut is encountered.
+=cut
+
+Quebras de linha são registradas como necessarias em um codigo
+
+print "Hello
+          world\n";
+
+Imprimirá:
+Hello
+          world
+
+Aspas simples e duplas
+print "Hello, world\n";
+print 'Hello, world\n';
+$a = 10;
+print "Value of a = $a\n";
+print 'Value of a = $a\n';
+
+Imprimirão
+Hello, world
+Hello, world\n
+Value of a = 10
+Value of a = $a\n
+
+$age = 25;             # An integer assignment
+$name = "John Paul";   # A string 
+$salary = 1445.50;     # A floating point
