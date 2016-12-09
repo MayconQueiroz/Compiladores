@@ -1,3 +1,3 @@
-Proposta: Facilidade de manipulação de Strings
-Desenvolvida inicialmente por Lary Wall, lançamento em 1987
+Proposta: Facilidade de manipulaï¿½ï¿½o de Strings
+Desenvolvida inicialmente por Lary Wall, lanï¿½amento em 1987
 Apesar de ser considerada uma linguagem de script, se parece mais com uma linguagem imperativa

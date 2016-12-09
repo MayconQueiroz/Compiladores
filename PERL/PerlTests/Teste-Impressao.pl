@@ -3,9 +3,11 @@
 #Impressao
 print "This is a single statement.\n";
 print "Look, ", "a ", "list!\n";
+@lista = ("primeiro", "segundo", "terceiro", "quarto");
+print @lista;
 
 #Impressao em varias linhas
-print "Hello
+print "\nHello
           world\n";
 
 #Diferenca entre aspas e apostrofo
@@ -32,4 +34,4 @@ $var = <<'EOF';
 This is case of single quote so variable value will not be
 interpolated. For example value of a = $a
 EOF
-print "$var\n";
+print "--------------------------------\n$var\n";

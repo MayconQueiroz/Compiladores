@@ -3,20 +3,30 @@
 $age = 25;             # An integer assignment
 $name = "John Paul";   # A string
 $salary = 1445.50;     # A floating point
+$age++;
 
 print "Age = $age\n";
 print "Name = $name\n";
 print "Salary = $salary\n";
 
+$age = "My new variable";
+$name = " fim!";
+$salary = $age . $name;
+
+print "New Age = $age\n";
+print "New Name = $name\n";
+print "New Salary = $salary\n";
+
 @ages = (25, 30, 40);
 @names = ("John Paul", "Lisa", "Kumar");
 
-print "$ages[0] = $ages[0]\n";
-print "$ages[1] = $ages[1]\n";
-print "$ages[2] = $ages[2]\n";
-print "$names[0] = $names[0]\n";
-print "$names[1] = $names[1]\n";
-print "$names[2] = $names[2]\n";
+print "ages = @ages\n";
+print "ages[0] = $ages[0]\n";
+print "ages[1] = $ages[1]\n";
+print "ages[2] = $ages[2]\n";
+print "names[0] = $names[0]\n";
+print "names[1] = $names[1]\n";
+print "names[2] = $names[2]\n";
 
 @days = qw/Mon Tue Wed Thu Fri Sat Sun/;
 
@@ -28,6 +38,9 @@ print "$days[-1]\n";
 print "$days[-7]\n";
 
 #################################Hash
+$data{'Adicao'} = 80;
+print "......$data{'Adicao'}\n";
+
 
 %data = ('John Paul' => 45, 'Lisa' => 30, 'Kumar' => 40);
 
@@ -36,6 +49,7 @@ $data{'Adicao'} = 80;
 print "$data{'John Paul'}\n";
 print "$data{'Lisa'}\n";
 print "$data{'Kumar'}\n";
+print "$data{'Adicao'}\n";
 
 print "\n------------------------------------------\n$data{'Adicao'}\n";
 
@@ -84,7 +98,7 @@ print "Reference type in r : ", ref($r), "\n";
 format EMPLOYEE =
 ===================================
 @<<<<<<<<<<<<<<<<<<<<<< @<<
-$name $age
+$name, $age
 @#####.##
 $salary
 ===================================
@@ -94,7 +108,7 @@ select(STDOUT);
 $~ = EMPLOYEE;
 
 @n = ("Ali", "Raza", "Jaffer");
-@a  = (20,30, 40);
+@a  = (20,30, 400);
 @s = (2000.00, 2500.00, 4000.000);
 
 $i = 0;

@@ -1,8 +1,8 @@
-Bibliotecas são chamadas de módulos
+Bibliotecas sï¿½o chamadas de mï¿½dulos
 Sebesta: Linguagem de script
-Hibrida: É pré compilada para detectar erros e isso "facilita" o trabalho do compilador
+Hibrida: ï¿½ prï¿½ compilada para detectar erros e isso "facilita" o trabalho do compilador
 Derivada de SNOBOL e awk, duas linguagens bastante voltadas para processamento de texto
-Variáveis: tipo estático e declaração implícita
+Variï¿½veis: tipo estï¿½tico e declaraï¿½ï¿½o implï¿½cita
 
 
 #Single line comment
@@ -10,16 +10,16 @@ Variáveis: tipo estático e declaração implícita
 =begin comment
 This is all part of multiline comment.
 You can use as many lines as you like
-These comments will be ignored by the 
+These comments will be ignored by the
 compiler until the next =cut is encountered.
 =cut
 
-Quebras de linha são registradas como necessarias em um codigo
+Quebras de linha sao registradas como necessarias em um codigo
 
 print "Hello
           world\n";
 
-Imprimirá:
+Imprimira:
 Hello
           world
 
@@ -30,12 +30,14 @@ $a = 10;
 print "Value of a = $a\n";
 print 'Value of a = $a\n';
 
-Imprimirão
+Imprimirao
 Hello, world
 Hello, world\n
 Value of a = 10
 Value of a = $a\n
 
 $age = 25;             # An integer assignment
-$name = "John Paul";   # A string 
+$name = "John Paul";   # A string
 $salary = 1445.50;     # A floating point
+
+sinal ponto (.) concatena strings 
