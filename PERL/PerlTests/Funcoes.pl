@@ -11,7 +11,7 @@ Hello();
 # Function definition
 sub Soma{
    #Quando uma funcao recebe variaveis, essas vao para o array subtraco (ou traco inferior); na linha abaixo, tam recebe o tamanho do array subtraco
-   $tam = scalar @_;
+   $tam = @_;
    $soma = 0;
    @E = @_;
    print "@E\n";
@@ -22,7 +22,7 @@ sub Soma{
    # get total number of arguments passed.
    for (my $i = 0; $i < $tam ; $i++) {
      print "somando $E[$i] para i = $i\n";
-     $soma = $soma + $E[$i];
+     $soma = $soma + $_[$i];
    }
 
 

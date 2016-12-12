@@ -10,7 +10,7 @@ print "@var_10\n";   # Prints number from 1 to 10
 #print "@var_abc\n";  # Prints number from a to z
 
 @var_10 = @var_10 * 10;
-print "--------------------------------\n@var_10\n";
+print "--------------------------------\n.@var_10.\n";
 
 # define Strings
 $var_string = "Rain-Drops-On-Roses-And-Whiskers-On-Kittens";
