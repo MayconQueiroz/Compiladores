@@ -1,10 +1,10 @@
 #!/usr/bin/perl
 
-# Global variable
+#=begin comment
+#S13-S14
 $string = "Hello, World!";
 
 sub PrintHello{
-   # Private variable for PrintHello function
    my $string;
    $string = "Hello, Perl!";
    PrintMe();
@@ -13,12 +13,21 @@ sub PrintHello{
 sub PrintMe{
    print "Inside the function PrintMe $string\n";
 }
-
-# Function call
 PrintHello();
 print "Outside the function $string\n";
 
-# Function definition
+$var = 5;
+print "Var     = $var\n";
+for (my $var = 0; $var < 3; $var++) {
+  print "Varfor  = $var\n";
+  my $var = 4;
+  print "Varfor2 = $var\n";
+}
+print "Var     = $var\n";
+#=cut
+
+=begin comment
+#S15
 sub PrintHash{
    my (%hash) = @_;
 
@@ -27,9 +36,18 @@ sub PrintHash{
    }
 }
 %hash = ('name' => 'Tom', 'age' => 19);
+PrintHash(%hash);
 
-# Create a reference to above function.
-$cref = \&PrintHash;
+sub Soma{
+  $soma = 0;
+  foreach $item (@_){
+    $soma += $item;
+  }
+  return $soma;
+}
 
-# Function call using reference.
-&$cref(%hash);
+@list = (10, 20, 30);
+$cref = \&Soma;
+$result = &$cref(@list);
+print "Soma = $soma\n";
+=cut

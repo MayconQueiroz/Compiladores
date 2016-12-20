@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-=begin comment
+#=begin comment
 @var_10 = (1..10);
 #@var_20 = (10..20);
 #@var_abc = (a..z);
@@ -20,17 +20,13 @@ $var_names = "Larry,David,Roger,Ken,Michael,Tom";
 @string = split('-', $var_string);
 @names  = split(',', $var_names);
 
+print "@string\n";
+print "@names\n";
+
 # transform above arrays into strings.
 $string1 = join( '-', @string );
 $string2 = join( ',', @names );
 
 print "$string1\n";
 print "$string2\n";
-=cut
-
-@array = qw/This is an array you fool/;
-
-print "@array\n";
-$exam = @array;
-
-print "$exam";
+#=cut
