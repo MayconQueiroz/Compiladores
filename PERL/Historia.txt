@@ -1,3 +1,0 @@
-Proposta: Facilidade de manipula��o de Strings
-Desenvolvida inicialmente por Lary Wall, lan�amento em 1987
-Apesar de ser considerada uma linguagem de script, se parece mais com uma linguagem imperativa
