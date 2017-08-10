@@ -1,0 +1,14 @@
+int [id, a];
+int [id, b]; int [id, c];
+chr [id, Grn];
+flt [id, tEste12];
+
+scn([id, a]);
+
+iff ([id, a] == [ni, 2]){
+  prt("Teste");
+  whl ([id, tEste12] == [nd, 20.89879852654]){
+    brk;
+  }
+}
+

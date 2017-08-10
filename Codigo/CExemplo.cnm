@@ -1,0 +1,14 @@
+int a;
+int b; int c;
+chr Grn;
+flt tEste12;
+
+scn(a);
+
+#Comentario vai sumir 5s54df65a489@!#$%¨&*#*(@()*&)
+iff (a == 2){
+  prt("Teste");
+  whl (tEste12 == 20.89879852654){
+    brk;
+  }
+}
