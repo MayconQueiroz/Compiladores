@@ -8,13 +8,14 @@
 * Recebe codigo.cnm e escreve em arquivo codigo.lnm
 */
 
-FILE *IN;
-FILE *OUT;
+FILE *IN; //Arquivo de entrada
+FILE *OUT; //Arquivo de saida
 
 char U; //Caractere sendo lido
-char L[255]; //String para atribuicao de identificadores
+char L[256]; //String para atribuicao de identificadores e numeros
 int Pl; //Posicao da linha (Contado com \n)
 
+//Declaracao de funcoes usadas a posteriori
 int leId();
 int leNumero();
 
@@ -24,7 +25,7 @@ int main(int argc, char *argv[]){
 		return Perros(1);
 	}
 
-  //Arquivos
+  //Abertura Arquivos
   IN = fopen(argv[1], "r");
   OUT = fopen(argv[2], "w");
   if (IN == NULL){
@@ -40,29 +41,28 @@ int main(int argc, char *argv[]){
   //Leitura Codigo Fonte
   while (!feof(IN)){
     fscanf (IN, "%c", &U);
-    //printf("-%c-\n", U);
     I = QueEso(U); //Funcao que retorna codigo de caractere (vide Checker.h)
     if (I == 0){ //Numero (Inteiro ou decimal)
       R = leNumero();
       if (R == 1){ //Numero muito extenso
-        return Cerros(131, Pl);
+        return Lerros(131, Pl);
       }
       if (R == 2){ //Dois pontos encontrados em sequencia (nao se sabe onde quebrar o numero)
-        return Cerros(132, Pl);
+        return Lerros(132, Pl);
       }
     } else if (I == 1){ //Caractere (Id ou Palavra reservada)
       R = leId();
       if (R == 3){ //Caractere invalido
-        return Cerros(128, Pl);
+        return Lerros(128, Pl);
       } else if (R == 4){ //String muito longa
-        return Cerros(129, Pl);
+        return Lerros(129, Pl);
       }
     } else if (I == 2){ //Simbolo
       if (U == '\"'){ //Inicio de string
         fprintf(OUT, "%c", U);
         fscanf (IN, "%c", &U);
         if (U == '\"'){ //Aspas imediatamente apos outras (Ilegal)
-          return Cerros(130, Pl);
+          return Lerros(130, Pl);
         }
         while (U != '\"' && !feof(IN)){ //Imprime toda a string no arquivo de saida
           fprintf(OUT, "%c", U);
@@ -81,7 +81,8 @@ int main(int argc, char *argv[]){
         fprintf(OUT, "%c", U);
       }
     } else {
-      return Cerros(128, Pl);
+      printf ("\"%c\" ", U);
+      return Lerros(128, Pl);
     }
   }
 
@@ -89,7 +90,8 @@ int main(int argc, char *argv[]){
 
 }
 
-int checkToken(){ //Se for qualquer uma das palavras reservadas retorna 1
+//Se for qualquer uma das palavras reservadas retorna 1
+int checkToken(){
   if (strcmp(L, "chr") == 0 || strcmp(L, "int") == 0 || strcmp(L, "flt") == 0 || strcmp(L, "brk") == 0 || strcmp(L, "scn") == 0 || strcmp(L, "iff") == 0 || strcmp(L, "els") == 0 || strcmp(L, "for") == 0 || strcmp(L, "whl") == 0 || strcmp(L, "prt") == 0){
     return 1;
   }
@@ -102,7 +104,6 @@ int leId(){
   while ((C == 0 || C == 1) && !feof(IN)){ //Le enquanto forem caracteres ou digitos (assumindo que o primeiro foi caractere)
     L[i] = U;
     fscanf (IN, "%c", &U);
-    //printf("-%c-\n", U);
     C = QueEso(U); //vide Checker.h
     i++;
     if (i == 255){ //String muito longa
@@ -129,7 +130,6 @@ int leNumero(){
   while ((C == 0 || U == '.') && !feof(IN)){ //Le enquanto forem digitos ou ponto (assumindo que o primeiro foi digito)
     L[i] = U;
     fscanf (IN, "%c", &U);
-    //printf("-%c-\n", U);
     if (U == '.' && F == 0){
       F = 1;
     } else if (U == '.' && F == 1){ //Se ler dois pontos

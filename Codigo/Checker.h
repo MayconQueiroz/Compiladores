@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /*
-Verifica tipos das coisas, numeros, caracteres, id's, tokens, simbolos
+Verifica tipos das coisas, nada mais por enquanto
 */
 
 //0 - Numero. 1 - Letra. 2 - Simbolo. 3 - Invalido

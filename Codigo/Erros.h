@@ -6,6 +6,7 @@ Erros retornam 1 se forem erros operacionais
       retornam -1 se forem erros de escrita de codigo
 */
 
+//0 ~ 127
 int Perros(int V){ //Erros de execucao do compilador. V = Codigo do erro
   if (V == 0){
     printf ("Erro nao catalogado");
@@ -25,7 +26,8 @@ int Perros(int V){ //Erros de execucao do compilador. V = Codigo do erro
   }
 }
 
-int Cerros(int V, int L){ //Erros encontrados no codigo. V = Codigo do erro; L = Linha em que o erro ocorreu
+//128 ~ 255
+int Lerros(int V, int L){ //Erros Lexicos encontrados no codigo. V = Codigo do erro; L = Linha em que o erro ocorreu
   if (V == 128){
     printf ("Simbolo invalido - Linha %i\n", L);
     return -1;
@@ -35,7 +37,7 @@ int Cerros(int V, int L){ //Erros encontrados no codigo. V = Codigo do erro; L =
     return -1;
   }
   if (V == 130){
-    printf ("Aspas coladas - Linha %i\n", L);
+    printf ("Aspas vazias - Linha %i\n", L);
     return -1;
   }
   if (V == 131){
@@ -46,8 +48,10 @@ int Cerros(int V, int L){ //Erros encontrados no codigo. V = Codigo do erro; L =
     printf ("Dois pontos encontrados em sequencia - Linha %i\n", L);
     return -1;
   }
-  if (V == 131){
+  /*
+  if (V == 133){
     printf (" - Linha %i\n", L);
     return -1;
   }
+  */
 }
