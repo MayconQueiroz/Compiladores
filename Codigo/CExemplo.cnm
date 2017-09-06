@@ -7,8 +7,27 @@ scn(a);
 
 #Comentario vai sumir 5s54df65a489@!#$%¨&*#*(@()*&)
 iff (a == 2){
-  prt("Teste");
-  whl (tEste12 == 20.89879852654){
-    brk;
+  tEste12 = 20.54896;
+  prt("Teste de impressao");
+  b = 0;
+  whl (b <= 10){
+    prt("b=");
+    prt(b);
+    prt("\n");
+    tEste12 = (tEste12 + b) / a;
+    b = b + 1;
+  }
+  prt ("tEste12=");
+  prt (tEste12);
+  prt ("\n");
+}
+els {
+  for(c = 0; c < 20; c = c + 1){
+    #Comentario
+    #Outro comentario
+    scn(Grn);
+    prt("Grn=");
+    prt(Grn);
+    prt("\n");
   }
 }

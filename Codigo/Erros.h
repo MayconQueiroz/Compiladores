@@ -14,6 +14,10 @@ int Perros(int V){ //Erros de execucao do compilador. V = Codigo do erro
   }
   if (V == 1){
     printf ("Quantidade invalida de argumentos\n");
+    printf ("Chamada do programa: ");
+    printf("[programa] [arquivo entrada] [arquivo saida]\n  programa       :\n    Windows: Lexico.exe\n    Linux  : ./Lexico.x\n  ");
+    printf("arquivo entrada: Arquivo de entrada .cnm a ser processado\n  ");
+    printf("arquivo saida  : Arquivo de saida .lnm a ser escrito");
     return 1;
   }
   if (V == 2){
