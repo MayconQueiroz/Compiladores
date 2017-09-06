@@ -18,6 +18,7 @@ int Pl; //Posicao da linha (Contado com \n)
 //Declaracao de funcoes usadas a posteriori
 int leId();
 int leNumero();
+void optok();
 
 int main(int argc, char *argv[]){
   int I, R;
@@ -50,6 +51,7 @@ int main(int argc, char *argv[]){
       if (R == 2){ //Dois pontos encontrados em sequencia (nao se sabe onde quebrar o numero)
         return Lerros(132, Pl);
       }
+      fprintf(OUT, "\n");
     } else if (I == 1){ //Caractere (Id ou Palavra reservada)
       R = leId();
       if (R == 3){ //Caractere invalido
@@ -57,6 +59,7 @@ int main(int argc, char *argv[]){
       } else if (R == 4){ //String muito longa
         return Lerros(129, Pl);
       }
+      fprintf(OUT, "\n");
     } else if (I == 2){ //Simbolo
       if (U == '\"'){ //Inicio de string
         fprintf(OUT, "%c", U);
@@ -69,25 +72,83 @@ int main(int argc, char *argv[]){
           fscanf (IN, "%c", &U);
         }
         fprintf(OUT, "%c", U); //Imprime as ultimas aspas no arquivo de saida
-      }else if (U == '\n'){ //Quebra de linha
+        fprintf(OUT, "\n");
+      } else if (U == '\n'){ //Quebra de linha
         Pl++;
-        fprintf(OUT, "%c", U);
       } else if (U == '#'){ //Comentario
         while (U != '\n' && !feof(IN)){ //Enquanto nao for o fim do arquivo ou quebra de linha
           fscanf (IN, "%c", &U);
         }
         Pl++;
       } else { //Qualquer outra coisa (Simbolos reconhecidos)
-        fprintf(OUT, "%c", U);
+        optok();
       }
     } else {
       printf ("\"%c\" ", U);
       return Lerros(128, Pl);
     }
   }
-
   return 0;
+}
 
+//Separa os tokens que interessam
+void optok(){
+  int i = 1;
+  L[0] = U;
+  if (U == '<'){ //<< ou <=
+    fscanf (IN, "%c", &U);
+    if (U == '<' || U == '='){
+      L[1] = U;
+      i = 2;
+    }
+  }else if (U == '>'){ //>= ou >>
+    fscanf (IN, "%c", &U);
+    if (U == '>' || U == '='){
+      L[1] = U;
+      i = 2;
+    }else {
+      fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+    }
+  }else if (U == '!'){ //! ou !=
+    fscanf (IN, "%c", &U);
+    if (U == '='){
+      L[1] = '=';
+      i = 2;
+    }else {
+      fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+    }
+  }else if (U == '='){ //= ou ==
+    fscanf (IN, "%c", &U);
+    if (U == '='){
+      L[1] = '=';
+      i = 2;
+    }else {
+      fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+    }
+  }
+  L[i] = '\0'; //Termina a string
+  //Operadores Logicos
+  if (!strcmp(L, "&") || !strcmp(L, "|") || !strcmp(L, "!") || !strcmp(L, "^") || !strcmp(L, "<<") || !strcmp(L, ">>")){
+    fprintf(OUT, "[ol, %s]\n", L);
+  }
+  //Operadores Aritmeticos
+  else if (!strcmp(L, "+") || !strcmp(L, "-") || !strcmp(L, "*") || !strcmp(L, "/") ||  !strcmp(L, "%%")){
+    fprintf(OUT, "[oa, %s]\n", L);
+  }
+  //Operadores Relacionais
+  else if (!strcmp(L, "==") || !strcmp(L, "!=") || !strcmp(L, "<=") || !strcmp(L, ">=") || !strcmp(L, "<") || !strcmp(L, ">")){
+    fprintf(OUT, "[or, %s]\n", L);
+  }
+  //Atribuicao
+  else if (!strcmp(L, "=")){
+    fprintf(OUT, "[at, %s]\n", L);
+  }
+  else {
+    //Nao propaga a impressao dos caracteres "whitespace"
+    if (U != '\n' && U != ' ' && U != '\t'){
+      fprintf(OUT, "%s\n", L);
+    }
+  }
 }
 
 //Se for qualquer uma das palavras reservadas retorna 1
