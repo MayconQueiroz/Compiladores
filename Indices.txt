@@ -1,0 +1,12 @@
+00 int Id
+01 str Palavra reservada
+02 str Caractere
+03 int String
+04 int Numero Inteiro
+05 flt Numero Decimal
+06 str Operador Logico
+07 str Operador Aritmetico
+08 str Operador Relacional
+09 str Atribuicao
+10 str Delimitador de sentenca (;)
+11 str Delimitador de bloco ({, }, (, ))

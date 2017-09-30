@@ -1,0 +1,170 @@
+int
+[id, a]
+;
+int
+[id, b]
+;
+int
+[id, c]
+;
+chr
+[id, Grn]
+;
+flt
+[id, tEste12]
+;
+scn
+(
+[id, a]
+)
+;
+iff
+(
+[id, a]
+[or, ==]
+[oa, -]
+[ni, 2]
+)
+{
+[id, tEste12]
+[at, =]
+[nd, 20.1254]
+;
+prt
+(
+"Teste de impressao"
+)
+;
+[id, b]
+[at, =]
+[ni, 0]
+;
+whl
+(
+[id, b]
+[or, <=]
+[ni, 10]
+)
+{
+prt
+(
+"b="
+)
+;
+prt
+(
+[id, b]
+)
+;
+prt
+(
+"\n"
+)
+;
+[id, tEste12]
+[at, =]
+(
+[id, tEste12]
+[oa, +]
+[id, b]
+)
+[oa, /]
+[id, a]
+;
+[id, b]
+[at, =]
+[id, b]
+[oa, +]
+[ni, 1]
+;
+[id, a]
+[at, =]
+[id, a]
+[ol, >>]
+[ni, 2]
+;
+}
+prt
+(
+"tEste12="
+)
+;
+prt
+(
+[id, tEste12]
+)
+;
+prt
+(
+"\n"
+)
+;
+}
+els
+{
+for
+(
+[id, c]
+[at, =]
+[ni, 0]
+;
+[id, c]
+[or, <]
+[ni, 20]
+;
+[id, c]
+[at, =]
+[id, c]
+[oa, +]
+[ni, 1]
+)
+{
+scn
+(
+[id, Grn]
+)
+;
+prt
+(
+"Grn="
+)
+;
+prt
+(
+[id, Grn]
+)
+;
+prt
+(
+"\n"
+)
+;
+}
+}
+[id, a]
+[at, =]
+[ni, 10]
+;
+[id, b]
+[at, =]
+[ni, 25]
+;
+[id, c]
+[at, =]
+[id, a]
+[ol, &]
+[id, b]
+;
+[id, if]
+(
+[id, c]
+[or, !=]
+[ni, 0]
+)
+{
+prt
+(
+"Verdadeiro\n"
+)
+;
+}

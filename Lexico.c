@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "Erros.h"
 #include "Checker.h"
+#include "Fila.h"
+#include "idtable.h"
 
 /**
 * Recebe codigo.cnm e escreve em arquivo codigo.lnm
@@ -14,21 +16,28 @@ FILE *OUT; //Arquivo de saida
 char U; //Caractere sendo lido
 char L[256]; //String para atribuicao de identificadores e numeros
 int Pl; //Posicao da linha (Contado com \n)
+TFila* Fini; //Ponteiros para inicio e fim da fila de tokens
+TFila* Ffin;
+Elemento* lista; //Lista de id's
+int QSTR = 0; //Quantidade de strings no arquivo de strings
 
 //Declaracao de funcoes usadas a posteriori
 int leId();
 int leNumero();
 void optok();
+void checaId();
+
+/////////////////////////////////////////////////////MAIN
 
 int main(int argc, char *argv[]){
-  int I, R;
+  int I, R, h = 0;
   if (argc != 3){
 		return Perros(1);
 	}
 
   //Abertura Arquivos
   IN = fopen(argv[1], "r");
-  OUT = fopen(argv[2], "w");
+  OUT = fopen("auxiliar.snm", "w");
   if (IN == NULL){
     return Perros(2);
   }
@@ -38,6 +47,9 @@ int main(int argc, char *argv[]){
 
   //Inicializacoes
   Pl = 1;
+  Fini = fila_cria();
+  Ffin = fila_cria();
+  lista = lista_cria();
 
   //Leitura Codigo Fonte
   while (!feof(IN)){
@@ -45,13 +57,9 @@ int main(int argc, char *argv[]){
     I = QueEso(U); //Funcao que retorna codigo de caractere (vide Checker.h)
     if (I == 0){ //Numero (Inteiro ou decimal)
       R = leNumero();
-      if (R == 1){ //Numero muito extenso
-        return Lerros(131, Pl);
+      if (R != 0){ //1 - Numero muito extenso; 2 - Dois pontos encontrados em sequencia (nao se sabe onde quebrar o numero); 3 - Ausencia de numeros apos o ponto
+        return Lerros(R + 130, Pl);
       }
-      if (R == 2){ //Dois pontos encontrados em sequencia (nao se sabe onde quebrar o numero)
-        return Lerros(132, Pl);
-      }
-      fprintf(OUT, "\n");
     } else if (I == 1){ //Caractere (Id ou Palavra reservada)
       R = leId();
       if (R == 3){ //Caractere invalido
@@ -59,10 +67,8 @@ int main(int argc, char *argv[]){
       } else if (R == 4){ //String muito longa
         return Lerros(129, Pl);
       }
-      fprintf(OUT, "\n");
     } else if (I == 2){ //Simbolo
       if (U == '\"'){ //Inicio de string
-        fprintf(OUT, "%c", U);
         fscanf (IN, "%c", &U);
         if (U == '\"'){ //Aspas imediatamente apos outras (Ilegal)
           return Lerros(130, Pl);
@@ -71,8 +77,9 @@ int main(int argc, char *argv[]){
           fprintf(OUT, "%c", U);
           fscanf (IN, "%c", &U);
         }
-        fprintf(OUT, "%c", U); //Imprime as ultimas aspas no arquivo de saida
-        fprintf(OUT, "\n");
+        fprintf(OUT, "\n"); //Quebra linha
+        Ffin = fila_insereint(Ffin, 3, QSTR);
+        QSTR++;
       } else if (U == '\n'){ //Quebra de linha
         Pl++;
       } else if (U == '#'){ //Comentario
@@ -80,6 +87,19 @@ int main(int argc, char *argv[]){
           fscanf (IN, "%c", &U);
         }
         Pl++;
+      } else if (U == '\''){ //Caractere entre aspas simples
+        fscanf (IN, "%c", &U);
+        R = impCaractere(U);
+        if (R == 1){
+          return Lerros(140, Pl);
+        }
+        L[0] = U;
+        L[1] = '\0';
+        fscanf (IN, "%c", &U);
+        if (U != '\''){
+          return Lerros(130, Pl);
+        }
+        Ffin = fila_inserestr(Ffin, 2, L);
       } else { //Qualquer outra coisa (Simbolos reconhecidos)
         optok();
       }
@@ -87,9 +107,16 @@ int main(int argc, char *argv[]){
       printf ("\"%c\" ", U);
       return Lerros(128, Pl);
     }
+    if (h == 0 && Ffin != NULL){
+      Fini = Ffin;
+      h = 1;
+    }
   }
+  //fila_imprime(Fini);
   return 0;
 }
+
+/////////////////////////////////////////////////////FIM DA MAIN
 
 //Separa os tokens que interessam
 void optok(){
@@ -129,24 +156,25 @@ void optok(){
   L[i] = '\0'; //Termina a string
   //Operadores Logicos
   if (!strcmp(L, "&") || !strcmp(L, "|") || !strcmp(L, "!") || !strcmp(L, "^") || !strcmp(L, "<<") || !strcmp(L, ">>")){
-    fprintf(OUT, "[ol, %s]\n", L);
+    Ffin = fila_inserestr(Ffin, 6, L);
   }
   //Operadores Aritmeticos
   else if (!strcmp(L, "+") || !strcmp(L, "-") || !strcmp(L, "*") || !strcmp(L, "/") ||  !strcmp(L, "%%")){
-    fprintf(OUT, "[oa, %s]\n", L);
+    Ffin = fila_inserestr(Ffin, 7, L);
   }
   //Operadores Relacionais
   else if (!strcmp(L, "==") || !strcmp(L, "!=") || !strcmp(L, "<=") || !strcmp(L, ">=") || !strcmp(L, "<") || !strcmp(L, ">")){
-    fprintf(OUT, "[or, %s]\n", L);
+    Ffin = fila_inserestr(Ffin, 8, L);
   }
   //Atribuicao
   else if (!strcmp(L, "=")){
-    fprintf(OUT, "[at, %s]\n", L);
+    Ffin = fila_inserestr(Ffin, 9, L);
   }
   else {
-    //Nao propaga a impressao dos caracteres "whitespace"
-    if (U != '\n' && U != ' ' && U != '\t'){
-      fprintf(OUT, "%s\n", L);
+    if (U == ';'){
+      Ffin = fila_inserestr(Ffin, 10, L);
+    } else if (U != '\n' && U != ' ' && U != '\t'){
+      Ffin = fila_inserestr(Ffin, 11, L);
     }
   }
 }
@@ -175,19 +203,20 @@ int leId(){
   if (i == 3){
     F = checkToken(); //Verifica se e uma das palavras reservadas da linguagem
     if (F == 1){
-      fprintf(OUT, "%s", L);
+      Ffin = fila_inserestr(Ffin, 1, L);
     } else {
-      fprintf(OUT, "[id, %s]", L);
+      checaId();
     }
   } else {
-    fprintf(OUT, "[id, %s]", L);
+    checaId();
   }
   fseek(IN, -1, SEEK_CUR); //Retorna um caractere
   return C;
 }
 
+//Le numeros decimais e inteiros
 int leNumero(){
-  int C = 0, i = 0, F = 0;
+  int C = 0, i = 0, F = 0, AN = 0;
   while ((C == 0 || U == '.') && !feof(IN)){ //Le enquanto forem digitos ou ponto (assumindo que o primeiro foi digito)
     L[i] = U;
     fscanf (IN, "%c", &U);
@@ -204,10 +233,34 @@ int leNumero(){
   }
   L[i] = '\0'; //Termina numero
   if (F == 1){ //Decimal
-    fprintf(OUT, "[nd, %s]", L);
+    if (L[i-1] == '.'){ //Sem numeros apos o ponto
+      return 3;
+    }
+    C = NumeroCorecto(L, 0);
+    if (C == 1){
+      return 4;
+    }
+    Ffin = fila_insereflt(Ffin, 5, atof(L));
   } else { //Inteiro
-    fprintf(OUT, "[ni, %s]", L);
+    C = NumeroCorecto(L, 1);
+    if (C == 1){
+      return 4;
+    }
+    Ffin = fila_insereint(Ffin, 4, atoi(L));
   }
   fseek(IN, -1, SEEK_CUR); //Retorna um caractere
   return 0;
+}
+
+//Faz as operacoes de tabelamento dos id's
+void checaId(){
+  int E;
+  E = lista_procura(lista, L);
+  if (E == -1){
+    lista = lista_insere(lista, L);
+    E = lista_procura(lista, L);
+    Ffin = fila_insereint(Ffin, 0, E);
+  } else {
+    Ffin = fila_insereint(Ffin, 0, E);
+  }
 }

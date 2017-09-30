@@ -7,7 +7,7 @@ scn(a);
 
 #Comentario vai sumir 5s54df65a489@!#$%¨&*#*(@()*&)
 iff (a == 2){
-  tEste12 = 20.54896;
+  tEste12 = 20.1254;
   prt("Teste de impressao");
   b = 0;
   whl (b <= 10){
@@ -16,6 +16,7 @@ iff (a == 2){
     prt("\n");
     tEste12 = (tEste12 + b) / a;
     b = b + 1;
+    a = a >> 2;
   }
   prt ("tEste12=");
   prt (tEste12);
@@ -30,6 +31,7 @@ els {
     prt(Grn);
     prt("\n");
   }
+  Grn = 'c';
 }
 a = 10;
 b = 25;

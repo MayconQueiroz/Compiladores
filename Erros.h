@@ -52,8 +52,21 @@ int Lerros(int V, int L){ //Erros Lexicos encontrados no codigo. V = Codigo do e
     printf ("Dois pontos encontrados em sequencia - Linha %i\n", L);
     return -1;
   }
-  /*
   if (V == 133){
+    printf ("Ausencia de digitos apos o ponto - Linha %i\n", L);
+    return -1;
+  }
+  if (V == 134){
+    printf ("Numero nao representavel - Linha %i\n", L);
+    return -1;
+  }
+  //135 ~ 139 Reservados para erros envolvendo reconhecimento de numeros
+  if (V == 140){
+    printf ("Caractere invalido - Linha %i\n", L);
+    return -1;
+  }
+  /*
+  if (V == 134){
     printf (" - Linha %i\n", L);
     return -1;
   }

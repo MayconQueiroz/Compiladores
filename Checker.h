@@ -1,5 +1,6 @@
-#include <string.h>
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*
 Verifica tipos das coisas, nada mais por enquanto
@@ -76,7 +77,6 @@ int QueEso(char C){
   if (C == '<') { return 2; }
   if (C == '>') { return 2; }
   if (C == ';') { return 2; }
-  if (C == '.') { return 2; }
   if (C == '+') { return 2; }
   if (C == '-') { return 2; }
   if (C == '*') { return 2; }
@@ -92,5 +92,52 @@ int QueEso(char C){
   if (C == '\n') { return 2; }
   if (C == '\t') { return 2; }
   if (C == '\"') { return 2; }
+  if (C == '\'') { return 2; }
   return 3;
+}
+
+//0 - Numero Representavel. 1 - Numero nao representavel. 2 - Erro de chamada
+int NumeroCorecto(char* N, int T){
+  int A, i, j;
+  float B;
+  char C[256];
+  i = 0;
+  j = 0;
+  if (T == 0){ //Numero Decimal
+    B = atof(N);
+    sprintf(C, "%g", B);
+    while (i == 0){ //Compara a string do numero original e o que oi convertido para string, se der diferente retorna erro
+      if (N[j] != C[j] || j == 255){
+        return 1;
+      }
+      if (N[j] == '\0'){ //Fim da string (So precisa de um)
+        i = 1;
+      }
+      j++;
+    }
+    return 0;
+  }
+  if (T == 1){ //Numero Inteiro
+    A = atoi(N);
+    itoa(A, C, 10);
+    while (i == 0){ //Compara a string do numero original e o que oi convertido para string, se der diferente retorna erro
+      if (N[j] != C[j] || j == 255){
+        return 1;
+      }
+      if (N[j] == '\0'){ //Fim da string (So precisa de um)
+        i = 1;
+      }
+      j++;
+    }
+    return 0;
+  }
+  return 2;
+}
+
+//0 - Caractere imprimivel. 1 - Caractere nao imprimivel
+int impCaractere(char A){
+  if (A == 32|| A == 33|| A == 35|| A == 36|| A == 37|| A == 38|| (A > 39 && A < 127)){
+    return 0;
+  }
+  return 1;
 }
