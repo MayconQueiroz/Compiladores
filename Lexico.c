@@ -26,6 +26,7 @@ int leId();
 int leNumero();
 void optok();
 void checaId();
+void apagaTudo();
 
 /////////////////////////////////////////////////////MAIN
 
@@ -58,19 +59,23 @@ int main(int argc, char *argv[]){
     if (I == 0){ //Numero (Inteiro ou decimal)
       R = leNumero();
       if (R != 0){ //1 - Numero muito extenso; 2 - Dois pontos encontrados em sequencia (nao se sabe onde quebrar o numero); 3 - Ausencia de numeros apos o ponto
+        apagaTudo();
         return Lerros(R + 130, Pl);
       }
     } else if (I == 1){ //Caractere (Id ou Palavra reservada)
       R = leId();
       if (R == 3){ //Caractere invalido
+        apagaTudo();
         return Lerros(128, Pl);
       } else if (R == 4){ //String muito longa
+        apagaTudo();
         return Lerros(129, Pl);
       }
     } else if (I == 2){ //Simbolo
       if (U == '\"'){ //Inicio de string
         fscanf (IN, "%c", &U);
         if (U == '\"'){ //Aspas imediatamente apos outras (Ilegal)
+          apagaTudo();
           return Lerros(130, Pl);
         }
         while (U != '\"' && !feof(IN)){ //Imprime toda a string no arquivo de saida
@@ -90,13 +95,15 @@ int main(int argc, char *argv[]){
       } else if (U == '\''){ //Caractere entre aspas simples
         fscanf (IN, "%c", &U);
         R = impCaractere(U);
-        if (R == 1){
+        if (R == 1){ //Se for um caractere imprimivel
+          apagaTudo();
           return Lerros(140, Pl);
         }
         L[0] = U;
         L[1] = '\0';
         fscanf (IN, "%c", &U);
-        if (U != '\''){
+        if (U != '\''){ //Nao fecha com aspas simpels
+          apagaTudo();
           return Lerros(130, Pl);
         }
         Ffin = fila_inserestr(Ffin, 2, L);
@@ -104,6 +111,7 @@ int main(int argc, char *argv[]){
         optok();
       }
     } else {
+      apagaTudo();
       printf ("\"%c\" ", U);
       return Lerros(128, Pl);
     }
@@ -113,6 +121,7 @@ int main(int argc, char *argv[]){
     }
   }
   //fila_imprime(Fini);
+  lista = lista_apagar(lista);
   return 0;
 }
 
@@ -263,4 +272,11 @@ void checaId(){
   } else {
     Ffin = fila_insereint(Ffin, 0, E);
   }
+}
+
+//Libera todas as posicoes alocadas para evitar lixo de memoria
+void apagaTudo(){
+  lista = lista_apagar(lista);
+  Fini = fila_apagar(Fini);
+  Ffin = NULL;
 }

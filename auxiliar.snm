@@ -3,6 +3,6 @@ b=
 \n
 tEste12=
 \n
-Grn=
-\n
-Verdadeiro\n
+Grn=);
+    prt(Grn);
+    prt(

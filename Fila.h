@@ -92,3 +92,21 @@ void fila_imprime (TFila* fila){ //Varre e imprime
     }
   }
 }
+
+TFila* fila_apagar (TFila* fila){ //Apaga a fila
+  TFila* p;
+  TFila* q;
+  int U = 0;
+  if (fila == NULL){
+    return NULL;
+  }
+  p = fila;
+  while(U == 0){
+    q = p->prox;
+    free(p);
+    p = q;
+    if (p == NULL)
+      U = 1;
+  }
+  return NULL;
+}
