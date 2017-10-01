@@ -1,0 +1,47 @@
+<stmt> -> <atri> <mstmt>.
+<stmt> -> <decl_stmt> <mstmt>.
+<stmt> -> <rept_stmt> <mstmt>.
+<stmt> -> <cond_stmt> <mstmt>.
+<stmt> -> <io_stmt> <mstmt>.
+<mstmt> -> <stmt>.
+<mstmt> -> .
+<decl_stmt> -> chr id ;.
+<decl_stmt> -> int id ;.
+<decl_stmt> -> flt id ;.
+<lexp> -> id or <qc>.
+<cond_stmt> -> iff ( <lexp> ) { <stmt> } <c>.
+<cond_stmt> -> brk ;.
+<c> -> els { <stmt> }.
+<c> -> .
+<rept_stmt> -> for ( <atri> ; <lexp> ; <atri> ) { <stmt> }.
+<rept_stmt> -> whl ( <lexp> ) { <stmt> }.
+<io_stmt> -> scn ( id ) ;.
+<io_stmt> -> prt ( <io> ) ;.
+<io> -> str.
+<io> -> int.
+<io> -> flt.
+<io> -> chr.
+<io> -> id.
+<atri> -> id = <term> ;.
+<term> -> id <oo>.
+<term> -> ni <oo>.
+<term> -> ch <oo>.
+<term> -> nd <of>.
+<term> -> ! <qd>.
+<term> -> ( <term> ) <oo>.
+<oo> -> ol <qs>.
+<oo> -> oa <qd>.
+<oo> -> .
+<of> -> oa <qd>.
+<of> -> .
+<qc> -> id.
+<qc> -> ch.
+<qc> -> ni.
+<qc> -> nd.
+<qf> -> id.
+<qf> -> ch.
+<qf> -> ni.
+<qd> -> ( <term> ).
+<qd> -> <qc>.
+<qs> -> ( <term> ).
+<qs> -> <qf>.
