@@ -18,9 +18,9 @@
 <io_stmt> -> scn ( id ) ;.
 <io_stmt> -> prt ( <io> ) ;.
 <io> -> str.
-<io> -> int.
-<io> -> flt.
-<io> -> chr.
+<io> -> ni.
+<io> -> nd.
+<io> -> ch.
 <io> -> id.
 <atri> -> id = <term> ;.
 <term> -> id <oo>.
