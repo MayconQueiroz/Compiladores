@@ -23,25 +23,15 @@
 <io> -> ch.
 <io> -> id.
 <atri> -> id = <term> ;.
-<term> -> id <oo>.
-<term> -> ni <oo>.
-<term> -> ch <oo>.
-<term> -> nd <of>.
-<term> -> ! <qd>.
-<term> -> ( <term> ) <oo>.
-<oo> -> ol <qs>.
-<oo> -> oa <qd>.
-<oo> -> .
-<of> -> oa <qd>.
-<of> -> .
-<qc> -> id.
-<qc> -> ch.
-<qc> -> ni.
-<qc> -> nd.
-<qf> -> id.
-<qf> -> ch.
-<qf> -> ni.
-<qd> -> ( <term> ).
-<qd> -> <qc>.
-<qs> -> ( <term> ).
-<qs> -> <qf>.
+<term> -> <n> <O> <R>.
+<O> -> !.
+<O> -> .
+<R> -> <term> <o> <O> <R>.
+<R> -> .
+<o> -> ol.
+<o> -> oa.
+<o> -> or.
+<n> -> ni.
+<n> -> nd.
+<n> -> ch.
+<n> -> id.
