@@ -27,7 +27,7 @@ els {
     #Comentario
     #Outro comentario
     scn(Grn);
-    prt("Grn="");
+    prt("Grn=");
     prt(Grn);
     prt("\n");
   }

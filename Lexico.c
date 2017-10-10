@@ -120,7 +120,7 @@ int main(int argc, char *argv[]){
       h = 1;
     }
   }
-  //fila_imprime(Fini);
+  fila_imprime(Fini);
   lista = lista_apagar(lista);
   return 0;
 }

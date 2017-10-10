@@ -76,13 +76,64 @@ TFila* fila_remove (TFila* fila){ //Remove a primeira posicao
   return fila;
 }
 
+void imprimetipo (int V){
+  if (V == 0){
+    printf("Id\t\t");
+    return;
+  }
+  if (V == 1){
+    printf("P reser\t\t");
+    return;
+  }
+  if (V == 2){
+    printf("Caractere\t");
+    return;
+  }
+  if (V == 3){
+    printf("String\t\t");
+    return;
+  }
+  if (V == 4){
+    printf("Inteiro\t\t");
+    return;
+  }
+  if (V == 5){
+    printf("Decimal\t\t");
+    return;
+  }
+  if (V == 6){
+    printf("O Logico\t");
+    return;
+  }
+  if (V == 7){
+    printf("O Aritmetico\t");
+    return;
+  }
+  if (V == 8){
+    printf("O Relacional\t");
+    return;
+  }
+  if (V == 9){
+    printf("Atribuicao\t");
+    return;
+  }
+  if (V == 10){
+    printf("P Virg\t\t");
+    return;
+  }
+  if (V == 11){
+    printf("Del Bloco\t");
+    return;
+  }
+}
+
 void fila_imprime (TFila* fila){ //Varre e imprime
   TFila* p;
   if (fila == NULL){
     printf("Fila Vazia\n");
   }
   for (p = fila; p != NULL; p = p->prox){
-    printf("Tipo = %i\t",p->info);
+    imprimetipo(p->info);
     if (p->info == 0 || p->info == 3 || p->info == 4){
       printf("%i\n", p->d.i);
     } else if (p->info == 5){
