@@ -77,51 +77,52 @@ TFila* fila_remove (TFila* fila){ //Remove a primeira posicao
 }
 
 void imprimetipo (int V){
-  if (V == 0){
+  V = V & 3840;
+  if (V == 256){
     printf("Id\t\t");
     return;
   }
-  if (V == 1){
+  if (V == 512){
     printf("P reser\t\t");
     return;
   }
-  if (V == 2){
+  if (V == 768){
     printf("Caractere\t");
     return;
   }
-  if (V == 3){
+  if (V == 1024){
     printf("String\t\t");
     return;
   }
-  if (V == 4){
+  if (V == 1280){
     printf("Inteiro\t\t");
     return;
   }
-  if (V == 5){
+  if (V == 1536){
     printf("Decimal\t\t");
     return;
   }
-  if (V == 6){
+  if (V == 1792){
     printf("O Logico\t");
     return;
   }
-  if (V == 7){
+  if (V == 2048){
     printf("O Aritmetico\t");
     return;
   }
-  if (V == 8){
+  if (V == 2304){
     printf("O Relacional\t");
     return;
   }
-  if (V == 9){
+  if (V == 2560){
     printf("Atribuicao\t");
     return;
   }
-  if (V == 10){
+  if (V == 2816){
     printf("P Virg\t\t");
     return;
   }
-  if (V == 11){
+  if (V == 3072){
     printf("Del Bloco\t");
     return;
   }
@@ -129,14 +130,18 @@ void imprimetipo (int V){
 
 void fila_imprime (TFila* fila){ //Varre e imprime
   TFila* p;
+  int Lin = 1, Ax;
   if (fila == NULL){
     printf("Fila Vazia\n");
   }
   for (p = fila; p != NULL; p = p->prox){
+    Lin = Lin + (p->info & 255);
     imprimetipo(p->info);
-    if (p->info == 0 || p->info == 3 || p->info == 4){
+    Ax = p->info & 3840;
+    printf("%i\t", Lin);
+    if (Ax == 256 || Ax == 1024 || Ax == 1280){
       printf("%i\n", p->d.i);
-    } else if (p->info == 5){
+    } else if (Ax == 1536){
       printf("%f\n", p->d.f);
     } else{
       printf("%s\n", p->d.str);

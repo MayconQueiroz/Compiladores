@@ -1,12 +1,13 @@
-00 int Id
-01 str Palavra reservada
-02 str Caractere
-03 int String
-04 int Numero Inteiro
-05 flt Numero Decimal
-06 str Operador Logico
-07 str Operador Aritmetico
-08 str Operador Relacional
-09 str Atribuicao
-10 str Delimitador de sentenca (;)
-11 str Delimitador de bloco ({, }, (, ))
+Numero Uni Identificacao
+256    int Id
+512    str Palavra reservada
+768    str Caractere
+1024   int String
+1280   int Numero Inteiro
+1536   flt Numero Decimal
+1792   str Operador Logico
+2048   str Operador Aritmetico
+2304   str Operador Relacional
+2560   str Atribuicao
+2816   str Delimitador de sentenca (;)
+3072   str Delimitador de bloco ({, }, (, ))

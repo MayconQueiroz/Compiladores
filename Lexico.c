@@ -16,8 +16,9 @@ FILE *OUT; //Arquivo de saida
 char U; //Caractere sendo lido
 char L[256]; //String para atribuicao de identificadores e numeros
 int Pl; //Posicao da linha (Contado com \n)
+int Pla; //Auxiliar de Pl e curinga apos analise lexica
 TFila* Fini; //Ponteiros para inicio e fim da fila de tokens
-TFila* Ffin;
+TFila* Ffin; //Fin = posicao a inserir
 Elemento* lista; //Lista de id's
 int QSTR = 0; //Quantidade de strings no arquivo de strings
 
@@ -32,7 +33,7 @@ void apagaTudo();
 
 int main(int argc, char *argv[]){
   int I, R, h = 0;
-  if (argc != 3){
+  if (argc != 2){
 		return Perros(1);
 	}
 
@@ -83,15 +84,25 @@ int main(int argc, char *argv[]){
           fscanf (IN, "%c", &U);
         }
         fprintf(OUT, "\n"); //Quebra linha
-        Ffin = fila_insereint(Ffin, 3, QSTR);
+        Pla = (Pla & 255) + 1024;
+        Ffin = fila_insereint(Ffin, Pla, QSTR);
+        Pla = 0;
         QSTR++;
       } else if (U == '\n'){ //Quebra de linha
         Pl++;
+        Pla++;
+        if (Pla == 256){ //Estourou
+          return Lerros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
+        }
       } else if (U == '#'){ //Comentario
         while (U != '\n' && !feof(IN)){ //Enquanto nao for o fim do arquivo ou quebra de linha
           fscanf (IN, "%c", &U);
         }
         Pl++;
+        Pla++;
+        if (Pla == 256){ //Estourou
+          return Lerros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
+        }
       } else if (U == '\''){ //Caractere entre aspas simples
         fscanf (IN, "%c", &U);
         R = impCaractere(U);
@@ -106,7 +117,9 @@ int main(int argc, char *argv[]){
           apagaTudo();
           return Lerros(130, Pl);
         }
-        Ffin = fila_inserestr(Ffin, 2, L);
+        Pla = (Pla & 255) + 768;
+        Ffin = fila_inserestr(Ffin, Pla, L);
+        Pla = 0;
       } else { //Qualquer outra coisa (Simbolos reconhecidos)
         optok();
       }
@@ -120,8 +133,13 @@ int main(int argc, char *argv[]){
       h = 1;
     }
   }
+  //////////////////////////////////////////////// Fim Analise Lexica
   fila_imprime(Fini);
   lista = lista_apagar(lista);
+  Pl = 1;
+
+  
+  //////////////////////////////////////////////// Fim Analise Semantica
   return 0;
 }
 
@@ -165,25 +183,37 @@ void optok(){
   L[i] = '\0'; //Termina a string
   //Operadores Logicos
   if (!strcmp(L, "&") || !strcmp(L, "|") || !strcmp(L, "!") || !strcmp(L, "^") || !strcmp(L, "<<") || !strcmp(L, ">>")){
-    Ffin = fila_inserestr(Ffin, 6, L);
+    Pla = (Pla & 255) + 1792;
+    Ffin = fila_inserestr(Ffin, Pla, L);
+    Pla = 0;
   }
   //Operadores Aritmeticos
   else if (!strcmp(L, "+") || !strcmp(L, "-") || !strcmp(L, "*") || !strcmp(L, "/") ||  !strcmp(L, "%%")){
-    Ffin = fila_inserestr(Ffin, 7, L);
+    Pla = (Pla & 255) + 2048;
+    Ffin = fila_inserestr(Ffin, Pla, L);
+    Pla = 0;
   }
   //Operadores Relacionais
   else if (!strcmp(L, "==") || !strcmp(L, "!=") || !strcmp(L, "<=") || !strcmp(L, ">=") || !strcmp(L, "<") || !strcmp(L, ">")){
-    Ffin = fila_inserestr(Ffin, 8, L);
+    Pla = (Pla & 255) + 2304;
+    Ffin = fila_inserestr(Ffin, Pla, L);
+    Pla = 0;
   }
   //Atribuicao
   else if (!strcmp(L, "=")){
-    Ffin = fila_inserestr(Ffin, 9, L);
+    Pla = (Pla & 255) + 2560;
+    Ffin = fila_inserestr(Ffin, Pla, L);
+    Pla = 0;
   }
   else {
     if (U == ';'){
-      Ffin = fila_inserestr(Ffin, 10, L);
+      Pla = (Pla & 255) + 2816;
+      Ffin = fila_inserestr(Ffin, Pla, L);
+      Pla = 0;
     } else if (U != '\n' && U != ' ' && U != '\t'){
-      Ffin = fila_inserestr(Ffin, 11, L);
+      Pla = (Pla & 255) + 3072;
+      Ffin = fila_inserestr(Ffin, Pla, L);
+      Pla = 0;
     }
   }
 }
@@ -212,7 +242,9 @@ int leId(){
   if (i == 3){
     F = checkToken(); //Verifica se e uma das palavras reservadas da linguagem
     if (F == 1){
-      Ffin = fila_inserestr(Ffin, 1, L);
+      Pla = (Pla & 255) + 512;
+      Ffin = fila_inserestr(Ffin, Pla, L);
+      Pla = 0;
     } else {
       checaId();
     }
@@ -249,13 +281,17 @@ int leNumero(){
     if (C == 1){
       return 4;
     }
-    Ffin = fila_insereflt(Ffin, 5, atof(L));
+    Pla = (Pla & 255) + 1536;
+    Ffin = fila_insereflt(Ffin, Pla, atof(L));
+    Pla = 0;
   } else { //Inteiro
     C = NumeroCorecto(L, 1);
     if (C == 1){
       return 4;
     }
-    Ffin = fila_insereint(Ffin, 4, atoi(L));
+    Pla = (Pla & 255) + 1280;
+    Ffin = fila_insereint(Ffin, Pla, atoi(L));
+    Pla = 0;
   }
   fseek(IN, -1, SEEK_CUR); //Retorna um caractere
   return 0;
@@ -268,9 +304,13 @@ void checaId(){
   if (E == -1){
     lista = lista_insere(lista, L);
     E = lista_procura(lista, L);
-    Ffin = fila_insereint(Ffin, 0, E);
+    Pla = (Pla & 255) + 256;
+    Ffin = fila_insereint(Ffin, Pla, E);
+    Pla = 0;
   } else {
-    Ffin = fila_insereint(Ffin, 0, E);
+    Pla = (Pla & 255) + 256;
+    Ffin = fila_insereint(Ffin, Pla, E);
+    Pla = 0;
   }
 }
 
