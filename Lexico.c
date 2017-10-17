@@ -34,17 +34,17 @@ void apagaTudo();
 int main(int argc, char *argv[]){
   int I, R, h = 0;
   if (argc != 2){
-		return Perros(1);
+		return Erros(1, 0);
 	}
 
   //Abertura Arquivos
   IN = fopen(argv[1], "r");
   OUT = fopen("auxiliar.snm", "w");
   if (IN == NULL){
-    return Perros(2);
+    return Erros(2, 0);
   }
   if (OUT == NULL){
-    return Perros(3);
+    return Erros(3, 0);
   }
 
   //Inicializacoes
@@ -61,23 +61,23 @@ int main(int argc, char *argv[]){
       R = leNumero();
       if (R != 0){ //1 - Numero muito extenso; 2 - Dois pontos encontrados em sequencia (nao se sabe onde quebrar o numero); 3 - Ausencia de numeros apos o ponto
         apagaTudo();
-        return Lerros(R + 130, Pl);
+        return Erros(R + 130, Pl);
       }
     } else if (I == 1){ //Caractere (Id ou Palavra reservada)
       R = leId();
       if (R == 3){ //Caractere invalido
         apagaTudo();
-        return Lerros(128, Pl);
+        return Erros(128, Pl);
       } else if (R == 4){ //String muito longa
         apagaTudo();
-        return Lerros(129, Pl);
+        return Erros(129, Pl);
       }
     } else if (I == 2){ //Simbolo
       if (U == '\"'){ //Inicio de string
         fscanf (IN, "%c", &U);
         if (U == '\"'){ //Aspas imediatamente apos outras (Ilegal)
           apagaTudo();
-          return Lerros(130, Pl);
+          return Erros(130, Pl);
         }
         while (U != '\"' && !feof(IN)){ //Imprime toda a string no arquivo de saida
           fprintf(OUT, "%c", U);
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]){
         Pl++;
         Pla++;
         if (Pla == 256){ //Estourou
-          return Lerros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
+          return Erros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
         }
       } else if (U == '#'){ //Comentario
         while (U != '\n' && !feof(IN)){ //Enquanto nao for o fim do arquivo ou quebra de linha
@@ -101,21 +101,21 @@ int main(int argc, char *argv[]){
         Pl++;
         Pla++;
         if (Pla == 256){ //Estourou
-          return Lerros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
+          return Erros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
         }
       } else if (U == '\''){ //Caractere entre aspas simples
         fscanf (IN, "%c", &U);
         R = impCaractere(U);
         if (R == 1){ //Se for um caractere imprimivel
           apagaTudo();
-          return Lerros(140, Pl);
+          return Erros(140, Pl);
         }
         L[0] = U;
         L[1] = '\0';
         fscanf (IN, "%c", &U);
         if (U != '\''){ //Nao fecha com aspas simpels
           apagaTudo();
-          return Lerros(130, Pl);
+          return Erros(130, Pl);
         }
         Pla = (Pla & 255) + 768;
         Ffin = fila_inserestr(Ffin, Pla, L);
@@ -126,7 +126,7 @@ int main(int argc, char *argv[]){
     } else {
       apagaTudo();
       printf ("\"%c\" ", U);
-      return Lerros(128, Pl);
+      return Erros(128, Pl);
     }
     if (h == 0 && Ffin != NULL){
       Fini = Ffin;
@@ -138,7 +138,7 @@ int main(int argc, char *argv[]){
   lista = lista_apagar(lista);
   Pl = 1;
 
-  
+
   //////////////////////////////////////////////// Fim Analise Semantica
   return 0;
 }

@@ -6,8 +6,8 @@ Erros retornam  1 se forem erros operacionais
       retornam -1 se forem erros de escrita de codigo
 */
 
-//0 ~ 127
-int Perros(int V){ //Erros de execucao do compilador. V = Codigo do erro
+int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. L = Linha do erro
+  //0 ~ 127
   if (V == 0){
     printf ("Erro nao catalogado");
     return 1;
@@ -27,10 +27,7 @@ int Perros(int V){ //Erros de execucao do compilador. V = Codigo do erro
     printf ("Falha ao abrir arquivo de saida\n");
     return 1;
   }
-}
-
-//128 ~ 255
-int Lerros(int V, int L){ //Erros Lexicos encontrados no codigo. V = Codigo do erro; L = Linha em que o erro ocorreu
+  //128 ~ 255 Erros Lexicos
   if (V == 128){
     printf ("Simbolo invalido - Linha %i\n", L);
     return -1;
@@ -69,11 +66,11 @@ int Lerros(int V, int L){ //Erros Lexicos encontrados no codigo. V = Codigo do e
     return -1;
   }
   /*
-  if (V == 134){
+  if (V == 142){
     printf (" - Linha %i\n", L);
     return -1;
   }
   */
-  printf ("Problemas com erros Lexicos\n");
+  printf ("Problemas com processamento de erros\n");
   return 1;
 }
