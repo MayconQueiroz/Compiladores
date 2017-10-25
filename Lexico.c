@@ -21,6 +21,8 @@ TFila* Fini; //Ponteiros para inicio e fim da fila de tokens
 TFila* Ffin; //Fin = posicao a inserir
 Elemento* lista; //Lista de id's
 int QSTR = 0; //Quantidade de strings no arquivo de strings
+int QVAR = 0; //Quantidade de variaveis
+char *VAR;
 
 //Declaracao de funcoes usadas a posteriori
 int leId();
@@ -28,6 +30,7 @@ int leNumero();
 void optok();
 void checaId();
 void apagaTudo();
+TFila* stmt(TFila* f);
 
 /////////////////////////////////////////////////////MAIN
 
@@ -134,11 +137,17 @@ int main(int argc, char *argv[]){
     }
   }
   //////////////////////////////////////////////// Fim Analise Lexica
-  fila_imprime(Fini);
+  //Variaveis que podem ser aproveitadas:
+  //int R, Pla, h, I
+  //char U, L[256]
+  //fila_imprime(Fini); //Impressao da fila (para debug)
   lista = lista_apagar(lista);
-  Pl = 1;
+  Pl = 1; //Volta pra primeira linha
+  Pl = Pl + (Fini->info & 255);
+  //Alocacao do vetor de Variaveis
+  VAR = (char *) calloc(QVAR, sizeof(char));
 
-
+  Ffin = stmt(Fini);
   //////////////////////////////////////////////// Fim Analise Semantica
   return 0;
 }
@@ -307,6 +316,7 @@ void checaId(){
     Pla = (Pla & 255) + 256;
     Ffin = fila_insereint(Ffin, Pla, E);
     Pla = 0;
+    QVAR += 1;
   } else {
     Pla = (Pla & 255) + 256;
     Ffin = fila_insereint(Ffin, Pla, E);
@@ -319,4 +329,183 @@ void apagaTudo(){
   lista = lista_apagar(lista);
   Fini = fila_apagar(Fini);
   Ffin = NULL;
+}
+
+///////////////////////////////////////////////////INICIO DAS FUNCOES SINTATICAS
+
+void imprimeextenso (int V){
+  if (V == 256){
+    printf("Variavel ");
+    return;
+  }
+  if (V == 512){
+    printf("Comando interno ");
+    return;
+  }
+  if (V == 768){
+    printf("Caractere ");
+    return;
+  }
+  if (V == 1024){
+    printf("String ");
+    return;
+  }
+  if (V == 1280){
+    printf("Inteiro ");
+    return;
+  }
+  if (V == 1536){
+    printf("Decimal ");
+    return;
+  }
+  if (V == 1792){
+    printf("Operador Logico ");
+    return;
+  }
+  if (V == 2048){
+    printf("Operador Aritmetico ");
+    return;
+  }
+  if (V == 2304){
+    printf("Operador Relacional ");
+    return;
+  }
+  if (V == 2560){
+    printf("Atribuicao ");
+    return;
+  }
+  if (V == 2816){
+    printf("Ponto e Virgula ");
+    return;
+  }
+  if (V == 3072){
+    printf("Delimitador de Bloco ");
+    return;
+  }
+}
+
+TFila* mstmt(TFila* f);
+TFila* decl_stmt(TFila* f);
+TFila* lexp(TFila* f);
+TFila* cond_stmt(TFila* f);
+TFila* checafprox(TFila* f){
+  if (f->prox == NULL){
+    Erros(256, Pl);
+  }
+  f = f->prox;
+  Pl = Pl + (f->info & 255);
+  return f;
+}
+
+TFila* stmt(TFila* f){
+  Pla = f->info & 3840;
+  if (Pla == 512){ //Palavra reservada
+    if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
+      f = decl_stmt(f);
+      f = mstmt(f);
+    } else if (strcmp(f->d.str, "iff") == 0 || strcmp(f->d.str, "brk") == 0){
+      f = cond_stmt(f);
+      f = mstmt(f);
+    } else if (strcmp(f->d.str, "for") == 0 || strcmp(f->d.str, "whl") == 0){
+      f = rept_stmt(f);
+      f = mstmt(f);
+    } else if (strcmp(f->d.str, "prt") == 0 || strcmp(f->d.str, "scn") == 0){
+      f = io_stmt(f);
+      f = mstmt(f);
+    } else {
+      Erros(257, Pl);
+    }
+  } else if (Pla == 256){
+    f = atri(f);
+    f = mstmt(f);
+  } else {
+    imprimeextenso(Pla);
+    Erros(258, Pl);
+  }
+  return f;
+}
+
+TFila* mstmt(TFila* f){
+  if (f == NULL){
+    return NULL;
+  }
+  Pla = f->info & 3840;
+  if (Pla == 512){ //Palavra reservada
+    if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
+      f = decl_stmt(f);
+      f = mstmt(f);
+    } else if (strcmp(f->d.str, "iff") == 0 || strcmp(f->d.str, "brk") == 0){
+      f = cond_stmt(f);
+      f = mstmt(f);
+    } else if (strcmp(f->d.str, "for") == 0 || strcmp(f->d.str, "whl") == 0){
+      f = rept_stmt(f);
+      f = mstmt(f);
+    } else if (strcmp(f->d.str, "prt") == 0 || strcmp(f->d.str, "scn") == 0){
+      f = io_stmt(f);
+      f = mstmt(f);
+    } else {
+      Erros(257, Pl);
+    }
+  } else if (Pla == 256){
+    f = atri(f);
+    f = mstmt(f);
+  } else if (Pla == 3072 && strcmp(f->d.str, "}") == 0){
+    f = f->prox;
+    if (f != NULL){
+      Pl = Pl + (f->info & 255);
+    }
+  } else {
+    imprimeextenso(Pla);
+    Erros(258, Pl);
+  }
+  return f;
+}
+
+TFila* decl_stmt(TFila* f){
+  char A = 0;
+  if (strcmp(f->d.str, "int") == 0){
+    f = checafprox(f);
+    A = 1;
+  } else if (strcmp(f->d.str, "flt") == 0){
+    f = checafprox(f);
+    A = 2;
+  } else if (strcmp(f->d.str, "chr") == 0){
+    f = checafprox(f);
+    A = 4;
+  } else {
+    printf ("Erro com a chamada da funcao decl_stmt\n");
+    exit(-1);
+  }
+  if ((f->info & 3840) == 256){ //O proximo e um ID
+    VAR[f->d.i] = A;
+  } else {
+    Erros(259, Pl);
+  }
+  f = checafprox(f);
+  if ((f->info & 3840) == 2816){ //O proximo e um delimitador de sentenca
+    f = checafprox(f);
+  } else {
+    Erros(260, Pl);
+  }
+  return f;
+}
+
+TFila* lexp(TFila* f){
+  Pla = f->info & 3840;
+  if (Pla == 256){ //Confirmacao se e um id
+    f = checafprox(f);
+    if ((f->info & 3840) == 2304){ //Operador relacional
+      f = checafprox(f);
+      f = qc(f);
+    } else {
+      Erros(261, Pl);
+    }
+  } else {
+    Erros(259, Pl);
+  }
+  return f;
+}
+
+TFila* cond_stmt(TFila* f){
+ return NULL;
 }

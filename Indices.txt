@@ -11,3 +11,15 @@ Numero Uni Identificacao
 2560   str Atribuicao
 2816   str Delimitador de sentenca (;)
 3072   str Delimitador de bloco ({, }, (, ))
+
+Utilizacao do inteiro p->info
+0000 0000 0000 0000 0000 0000 0000 0000
+ 0    1    2    3    4    5    6    7
+0- Nada
+1- Nada
+2- Nada
+3- Nada
+4- Nada
+5- Tipo do que está sendo armazenado (tabela acima)
+6- Acrescimo para posicao atual de linha (+7)
+7- Acrescimo para posicao atual de linha
