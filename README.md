@@ -1,7 +1,9 @@
 # Compiladores
 Trabalho de Compiladores de 2017
+*Juliano Felipe Silva*
+*Maycon Queiroz Oliveira*
 
-## Descrição a ser adicionada
+## Detalhes
 ### Chamada
 ```
 [programa] [arquivo entrada]
