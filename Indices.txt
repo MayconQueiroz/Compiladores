@@ -1,16 +1,17 @@
-Numero Uni Identificacao
+Numero Uni Identificacao (Simbolo(s))
 256    int Id
 512    str Palavra reservada
 768    str Caractere
 1024   int String
 1280   int Numero Inteiro
 1536   flt Numero Decimal
-1792   str Operador Logico
-2048   str Operador Aritmetico
-2304   str Operador Relacional
-2560   str Atribuicao
+1792   str Operador Logico (&, |, ^, <<, >>, !)
+2048   str Operador Aritmetico (+, -, *, /, %)
+2304   str Operador Relacional (==, !=, <=, >=, <, >)
+2560   str Atribuicao (=)
 2816   str Delimitador de sentenca (;)
 3072   str Delimitador de bloco ({, }, (, ))
+3328   int Delimitador de fim de arquivo
 
 Utilizacao do inteiro p->info
 0000 0000 0000 0000 0000 0000 0000 0000

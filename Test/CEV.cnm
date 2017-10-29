@@ -1,0 +1,32 @@
+int a;
+int b; int c; int d;
+chr Grn;
+flt tEste12;
+flt neW;
+
+#Teste de Comentario Unico
+prt("Teste de entrada de inteiros:\n");
+scn(a);
+prt("Teste de entrada de decimais:\n");
+scn(tEste12);
+prt("Teste de entrada de caracteres:\n");
+scn(Grn);
+
+#Teste de Comentario com duas linhas
+#Segunda linha do teste
+d = 15;
+neW = 5.5;
+b = a 2 % d |;
+d = d 2 <<;
+c = a b + Grn *;
+neW = c b ! - a /;
+b = a c & ! Grn ^ 2 >>;
+
+iff(b < a){
+  prt(a);
+}
+iff (New <= 2.5){
+  prt(b);
+} els {
+  prt(neW);
+}

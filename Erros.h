@@ -72,8 +72,8 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
   //256 ~ 511 Erros Sintaticos
   if (V <= 511 && V >= 256){
     if (V == 256){
-      printf("Fim do programa em momento inesperado\n");
-      exit(1);
+      printf("Fim da fila em momento inesperado\n");
+      exit(-1);
     }
     if (V == 257){
       printf("els nao esperado - Linha %i\n", L);
@@ -95,7 +95,47 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf("Operador relacional esperado - Linha %i", L);
       exit(1);
     }
-    if (V == 26){
+    if (V == 262){
+      printf("Parenteses esquerdo esperado (() - Linha %i", L);
+      exit(1);
+    }
+    if (V == 263){
+      printf("Parenteses direito esperado ()) - Linha %i", L);
+      exit(1);
+    }
+    if (V == 264){
+      printf("Chave esquerda esperada ({) - Linha %i", L);
+      exit(1);
+    }
+    if (V == 265){
+      printf("Chave direita esperada (}) - Linha %i", L);
+      exit(1);
+    }
+    if (V == 266){
+      printf("Esperado els ou inicio de expressao - Linha %i", L);
+      exit(1);
+    }
+    if (V == 267){
+      printf("Valor de impressao invalido - Linha %i", L);
+      exit(1);
+    }
+    if (V == 268){
+      printf("Sinal de igualdade esperado para atribuicao - Linha %i", L);
+      exit(1);
+    }
+    if (V == 269){
+      printf("Construcao incorreta da atribuicao - Linha %i", L);
+      exit(1);
+    }
+    if (V == 270){
+      printf("Algo deu errado na analise sintatica - Linha %i", L);
+      exit(1);
+    }
+    if (V == 27){
+      printf(" - Linha %i", L);
+      exit(1);
+    }
+    if (V == 27){
       printf(" - Linha %i", L);
       exit(1);
     }

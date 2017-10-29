@@ -136,6 +136,9 @@ int main(int argc, char *argv[]){
       h = 1;
     }
   }
+
+  Ffin = fila_insereint(Ffin, 3328, 0);
+
   //////////////////////////////////////////////// Fim Analise Lexica
   //Variaveis que podem ser aproveitadas:
   //int R, Pla, h, I
@@ -147,7 +150,11 @@ int main(int argc, char *argv[]){
   //Alocacao do vetor de Variaveis
   VAR = (char *) calloc(QVAR, sizeof(char));
 
-  Ffin = stmt(Fini);
+  Ffin = stmt(Fini); //Regras da gramatica
+
+  if (!((Ffin->info & 3840) == 3328)){
+    Erros(270, Pl);
+  }
   //////////////////////////////////////////////// Fim Analise Semantica
   return 0;
 }
@@ -382,12 +389,26 @@ void imprimeextenso (int V){
     printf("Delimitador de Bloco ");
     return;
   }
+  if (V == 3328){
+    printf("Fim do Arquivo\t");
+    return;
+  }
 }
 
 TFila* mstmt(TFila* f);
 TFila* decl_stmt(TFila* f);
 TFila* lexp(TFila* f);
 TFila* cond_stmt(TFila* f);
+TFila* c(TFila* f);
+TFila* rept_stmt(TFila* f);
+TFila* io_stmt(TFila* f);
+TFila* iol(TFila* f);
+TFila* atri(TFila* f);
+TFila* term(TFila* f);
+TFila* O(TFila* f);
+TFila* R(TFila* f);
+TFila* o(TFila* f);
+TFila* n(TFila* f);
 TFila* checafprox(TFila* f){
   if (f->prox == NULL){
     Erros(256, Pl);
@@ -398,7 +419,7 @@ TFila* checafprox(TFila* f){
 }
 
 TFila* stmt(TFila* f){
-  Pla = f->info & 3840;
+  Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
       f = decl_stmt(f);
@@ -429,7 +450,7 @@ TFila* mstmt(TFila* f){
   if (f == NULL){
     return NULL;
   }
-  Pla = f->info & 3840;
+  Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
       f = decl_stmt(f);
@@ -446,14 +467,13 @@ TFila* mstmt(TFila* f){
     } else {
       Erros(257, Pl);
     }
-  } else if (Pla == 256){
+  } else if (Pla == 256){ //Id
     f = atri(f);
     f = mstmt(f);
   } else if (Pla == 3072 && strcmp(f->d.str, "}") == 0){
-    f = f->prox;
-    if (f != NULL){
-      Pl = Pl + (f->info & 255);
-    }
+    //Do nothing
+  } else if (Pla == 3328){ //Fim de arquivo
+    return f;
   } else {
     imprimeextenso(Pla);
     Erros(258, Pl);
@@ -473,16 +493,16 @@ TFila* decl_stmt(TFila* f){
     f = checafprox(f);
     A = 4;
   } else {
-    printf ("Erro com a chamada da funcao decl_stmt\n");
+    printf ("Declaracao de variavel esperada\n");
     exit(-1);
   }
-  if ((f->info & 3840) == 256){ //O proximo e um ID
+  if ((f->info & 3840) == 256){ //ID
     VAR[f->d.i] = A;
   } else {
     Erros(259, Pl);
   }
   f = checafprox(f);
-  if ((f->info & 3840) == 2816){ //O proximo e um delimitador de sentenca
+  if ((f->info & 3840) == 2816){ //;
     f = checafprox(f);
   } else {
     Erros(260, Pl);
@@ -491,12 +511,15 @@ TFila* decl_stmt(TFila* f){
 }
 
 TFila* lexp(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
   Pla = f->info & 3840;
   if (Pla == 256){ //Confirmacao se e um id
     f = checafprox(f);
     if ((f->info & 3840) == 2304){ //Operador relacional
       f = checafprox(f);
-      f = qc(f);
+      f = n(f);
     } else {
       Erros(261, Pl);
     }
@@ -507,5 +530,281 @@ TFila* lexp(TFila* f){
 }
 
 TFila* cond_stmt(TFila* f){
- return NULL;
+  Pla = (f->info & 3840);
+  if (Pla == 512 && strcmp(f->d.str, "iff") == 0){ //If
+    f = checafprox(f);
+    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+      f = checafprox(f);
+      f = lexp(f);
+      if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+        f = checafprox(f);
+        if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+          f = checafprox(f);
+          f = stmt(f);
+          if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
+            f = checafprox(f); //TODO Tratar fim de arquivo
+            f = c(f);
+            return f;
+          } else {
+            Erros(265, Pl);
+          }
+        } else {
+          Erros(264, Pl);
+        }
+      } else {
+        Erros(263, Pl);
+      }
+    } else {
+      Erros(262, Pl);
+    }
+  } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "brk") == 0){ //Break
+    f = checafprox(f);
+    if ((f->info & 3840) == 2816){ //;
+      f = checafprox(f);
+      return f;
+    } else {
+      Erros(260, Pl);
+    }
+  } else {
+    printf("Esperada chamada de funcao de condicao - Possivel Linha %i\n", Pl);
+    exit (-1);
+  }
+  return NULL;
+}
+
+TFila* c(TFila* f){
+  if ((f->info & 3840) == 512 && strcmp(f->d.str, "els") == 0){ //els
+    f = checafprox(f);
+    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+      f = checafprox(f);
+      f = stmt(f);
+      if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
+        f = checafprox(f); //TODO tratar fim de arquivo
+        return f;
+      } else {
+        Erros(265, Pl);
+      }
+    } else {
+      Erros(264, Pl);
+    }
+  } else if ((f->info & 3840) == 512 || (f->info & 3840) == 256 || (f->info & 3840) == 3328 || ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0)){
+    return f;
+  } else {
+    Erros(266, Pl);
+  }
+}
+
+TFila* rept_stmt(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 512 && strcmp(f->d.str, "for") == 0){
+    f = checafprox(f);
+    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+      f = checafprox(f);
+      f = atri(f);
+      f = atri(f);
+      f = lexp(f);
+      if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+        f = checafprox(f);
+        if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+          f = checafprox(f);
+          f = stmt(f);
+          if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
+            f = checafprox(f); //TODO Tratar fim de arquivo
+            return f;
+          } else {
+            Erros(265, Pl);
+          }
+        } else {
+          Erros(264, Pl);
+        }
+      } else {
+        Erros(263, Pl);
+      }
+    } else {
+      Erros(262, Pl);
+    }
+  } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "whl") == 0){
+    f = checafprox(f);
+    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+      f = checafprox(f);
+      f = lexp(f);
+      if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+        f = checafprox(f);
+        if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+          f = checafprox(f);
+          f = stmt(f);
+          if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
+            f = checafprox(f); //TODO Tratar fim de arquivo
+            return f;
+          } else {
+            Erros(265, Pl);
+          }
+        } else {
+          Erros(264, Pl);
+        }
+      } else {
+        Erros(263, Pl);
+      }
+    } else {
+      Erros(262, Pl);
+    }
+  } else {
+    printf("Esperada chamada de funcao de repeticao - Possivel Linha %i\n", Pl);
+    exit(-1);
+  }
+}
+
+TFila* io_stmt(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 512 && strcmp(f->d.str, "scn") == 0){
+    f = checafprox(f);
+    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+      f = checafprox(f);
+      if ((f->info & 3840) == 256){ //Id
+        f = checafprox(f);
+        if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+          f = checafprox(f);
+          if (((f->info & 3840)) == 2816){ //;
+            f = checafprox(f);
+            return f;
+          } else {
+            Erros(260, Pl);
+          }
+        } else {
+          Erros(263, Pl);
+        }
+      } else {
+        Erros(259, Pl);
+      }
+    } else {
+      Erros(262, Pl);
+    }
+  } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "prt") == 0){
+    f = checafprox(f);
+    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+      f = checafprox(f);
+      f = iol(f);
+      if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+        f = checafprox(f);
+        if ((f->info & 3840) == 2816){ //;
+          f = checafprox(f);
+          return f;
+        } else {
+          Erros(260, Pl);
+        }
+      } else {
+        Erros(263, Pl);
+      }
+    } else {
+      Erros(262, Pl);
+    }
+  } else {
+    printf("Esperado chamada de entrada/saida - Possivel Linha %i\n", Pl);
+    exit(1);
+  }
+}
+
+TFila* iol(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1024 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+    return checafprox(f);
+  } else {
+    Erros(267, Pl);
+  }
+}
+
+TFila* atri(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 256){ //Id
+    f = checafprox(f);
+    if ((f->info & 3840) == 2560){ //=
+      f = checafprox(f);
+      f = term(f);
+      if ((f->info & 3840) == 2816){ //;
+        f = checafprox(f);
+        return f;
+      } else {
+        Erros(260, Pl);
+      }
+    } else {
+      Erros(268, Pl);
+    }
+  } else {
+    printf("Esperada atribuicao - Possivel linha %i", Pl);
+    exit(1);
+  }
+}
+
+TFila* term(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+    f = n(f);
+    f = O(f);
+    f = R(f);
+    return f;
+  } else {
+    Erros(269, Pl);
+  }
+}
+
+TFila* O(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if (((f->info & 3840) == 1792) && strcmp(f->d.str, "!") == 0){
+    return checafprox(f);
+  } else if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536 || (f->info & 3840) == 2816 || (f->info & 3840) == 1792 || (f->info & 3840) == 2048 || (f->info & 3840) == 2304){
+    return f;
+  } else {
+    Erros(269, Pl);
+  }
+}
+
+TFila* R(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+    f = term(f);
+    f = o(f);
+    f = O(f);
+    f = R(f);
+    return f;
+  } else if ((f->info & 3840) == 2816 || (f->info & 3840) == 1792 || (f->info & 3840) == 2048 || (f->info & 3840) == 2304){
+    return f;
+  } else {
+    Erros(269, Pl);
+  }
+}
+
+TFila* o(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if (((f->info & 3840) == 1792 && !(strcmp(f->d.str, "!") == 0)) || (f->info & 3840) == 2048 || (f->info & 3840) == 2304){
+    return checafprox(f);
+  } else {
+    Erros(269, Pl);
+  }
+}
+
+TFila* n(TFila* f){
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+    return checafprox(f);
+  } else {
+    Erros(269, Pl);
+  }
 }

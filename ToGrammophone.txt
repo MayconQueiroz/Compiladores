@@ -8,7 +8,7 @@
 <decl_stmt> -> chr id ;.
 <decl_stmt> -> int id ;.
 <decl_stmt> -> flt id ;.
-<lexp> -> id or <qc>.
+<lexp> -> id or <n>.
 <cond_stmt> -> iff ( <lexp> ) { <stmt> } <c>.
 <cond_stmt> -> brk ;.
 <c> -> els { <stmt> }.

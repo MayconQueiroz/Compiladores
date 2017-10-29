@@ -126,6 +126,10 @@ void imprimetipo (int V){
     printf("Del Bloco\t");
     return;
   }
+  if (V == 3328){
+    printf("Fim Arqui\t");
+    return;
+  }
 }
 
 void fila_imprime (TFila* fila){ //Varre e imprime
@@ -139,13 +143,28 @@ void fila_imprime (TFila* fila){ //Varre e imprime
     imprimetipo(p->info);
     Ax = p->info & 3840;
     printf("%i\t", Lin);
-    if (Ax == 256 || Ax == 1024 || Ax == 1280){
+    if (Ax == 256 || Ax == 1024 || Ax == 1280 || Ax == 3328){
       printf("%i\n", p->d.i);
     } else if (Ax == 1536){
       printf("%f\n", p->d.f);
     } else{
       printf("%s\n", p->d.str);
     }
+  }
+}
+
+void imprimevalor (TFila* fila){
+  int Ax, Lin;
+  Lin = Lin + (fila->info & 255);
+  imprimetipo(fila->info);
+  Ax = fila->info & 3840;
+  printf("%i\t", Lin);
+  if (Ax == 256 || Ax == 1024 || Ax == 1280 || Ax == 3328){
+    printf("%i\n", fila->d.i);
+  } else if (Ax == 1536){
+    printf("%f\n", fila->d.f);
+  } else{
+    printf("%s\n", fila->d.str);
   }
 }
 

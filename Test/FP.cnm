@@ -1,0 +1,9 @@
+int a;
+scn(a);
+a = a 5 +;
+prt(a);
+iff (a < 5){
+  a = a 5 + 10 ! * 50 ! -; # Equivalente a a = !(((a + 5) * (!10)) - 50)
+} els {
+  a = 0;
+}
