@@ -8,9 +8,10 @@ Trabalho de Compiladores de 2017
 ## Detalhes
 ### Chamada
 ```
-[programa] [arquivo entrada]
-programa       :
-        Windows: Lexico.exe
-        Linux  : ./Lexico.x
-arquivo entrada: Arquivo de entrada .cnm a ser processado (extensão requerida)
+Compilador [opções] entrada
+
+  opções :
+    -d  Debug (Imprime filas e vetores)
+    -h  Mostra ajuda
+  entrada: Arquivo de entrada .cnm a ser processado (extensão requerida)
 ```
