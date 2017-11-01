@@ -1,0 +1,7 @@
+ int a;
+ flt b;
+ int c;
+
+ iff (b > c){
+  c = b a + 5 4 - /;
+ }

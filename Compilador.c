@@ -7,7 +7,7 @@
 #include "idtable.h"
 
 /**
-* Recebe codigo.cnm e escreve em arquivo codigo.lnm
+* Recebe codigo.cnm
 */
 
 FILE *IN; //Arquivo de entrada
@@ -22,7 +22,8 @@ TFila* Ffin; //Fin = posicao a inserir
 Elemento* lista; //Lista de id's
 int QSTR = 0; //Quantidade de strings no arquivo de strings
 int QVAR = 0; //Quantidade de variaveis
-char *VAR;
+char *VAR; //Vetor a ser alocado depois para informacoes dos ids
+int deb = 0; //Debug mode
 
 //Declaracao de funcoes usadas a posteriori
 int leId();
@@ -35,13 +36,47 @@ TFila* stmt(TFila* f);
 /////////////////////////////////////////////////////MAIN
 
 int main(int argc, char *argv[]){
-  int I, R, h = 0;
-  if (argc != 2){
-		return Erros(1, 0);
-	}
+  int I, R, h = 0, i;
+  if (argc == 2 || argc == 3){
+    for (i = 1; i < argc; i++) {
+      if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "/h") == 0 || strcmp(argv[i], "/H") == 0 || strcmp(argv[i], "-H") == 0  || strcmp(argv[i], "/?") == 0) {
+        return Erros(1, 0);
+      }
+      if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "/d") == 0 || strcmp(argv[i], "/D") == 0 || strcmp(argv[i], "-D") == 0) {
+        deb = 1;
+        R = i;
+      }
+    }
+    if (deb == 1){ //Debug mode on
+      if (R == 1){
+        if (strlen(argv[2]) < 5){
+          return Erros(1, 0);
+        }
+      } else if (R == 2){
+        if (strlen(argv[1]) < 5){
+          return Erros(1, 0);
+        }
+      }
+    } else {
+      if (argc == 3){
+        return Erros(1, 0);
+      }
+    }
+	} else {
+    return Erros(1, 0);
+  }
 
   //Abertura Arquivos
-  IN = fopen(argv[1], "r");
+  if (deb == 1){ //Debug mode on
+    if (R == 1){
+      IN = fopen(argv[2], "r");
+    }
+    else if (R == 2){
+      IN = fopen(argv[1], "r");
+    }
+  } else {
+    IN = fopen(argv[1], "r");
+  }
   OUT = fopen("auxiliar.snm", "w");
   if (IN == NULL){
     return Erros(2, 0);
@@ -137,13 +172,19 @@ int main(int argc, char *argv[]){
     }
   }
 
+  if (Fini == NULL){ //Nao compila arquivos vazios
+    Erros(271, Pl);
+  }
+
   Ffin = fila_insereint(Ffin, 3328, 0);
 
   //////////////////////////////////////////////// Fim Analise Lexica
   //Variaveis que podem ser aproveitadas:
   //int R, Pla, h, I
   //char U, L[256]
-  //fila_imprime(Fini); //Impressao da fila (para debug)
+  if (deb == 1){
+    fila_imprime(Fini); //Impressao da fila (para debug)
+  }
   lista = lista_apagar(lista);
   Pl = 1; //Volta pra primeira linha
   Pl = Pl + (Fini->info & 255);
@@ -152,6 +193,11 @@ int main(int argc, char *argv[]){
 
   Ffin = stmt(Fini); //Regras da gramatica
 
+  if (deb == 1){
+    for (i = 0; i < QVAR; i++) {
+      printf("VAR[%i] = %u. ", i, VAR[i]);
+    }
+  }
   if (!((Ffin->info & 3840) == 3328)){
     Erros(270, Pl);
   }
@@ -415,6 +461,7 @@ TFila* checafprox(TFila* f){
   }
   f = f->prox;
   Pl = Pl + (f->info & 255);
+  Pla = (f->info & 3840);
   return f;
 }
 
@@ -448,7 +495,7 @@ TFila* stmt(TFila* f){
 
 TFila* mstmt(TFila* f){
   if (f == NULL){
-    return NULL;
+    Erros(256, Pl);
   }
   Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
@@ -471,7 +518,7 @@ TFila* mstmt(TFila* f){
     f = atri(f);
     f = mstmt(f);
   } else if (Pla == 3072 && strcmp(f->d.str, "}") == 0){
-    //Do nothing
+    return f;
   } else if (Pla == 3328){ //Fim de arquivo
     return f;
   } else {
@@ -496,13 +543,13 @@ TFila* decl_stmt(TFila* f){
     printf ("Declaracao de variavel esperada\n");
     exit(-1);
   }
-  if ((f->info & 3840) == 256){ //ID
+  if (Pla == 256){ //ID
     VAR[f->d.i] = A;
   } else {
     Erros(259, Pl);
   }
   f = checafprox(f);
-  if ((f->info & 3840) == 2816){ //;
+  if (Pla == 2816){ //;
     f = checafprox(f);
   } else {
     Erros(260, Pl);
@@ -517,7 +564,7 @@ TFila* lexp(TFila* f){
   Pla = f->info & 3840;
   if (Pla == 256){ //Confirmacao se e um id
     f = checafprox(f);
-    if ((f->info & 3840) == 2304){ //Operador relacional
+    if (Pla == 2304){ //Operador relacional
       f = checafprox(f);
       f = n(f);
     } else {
@@ -533,16 +580,16 @@ TFila* cond_stmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512 && strcmp(f->d.str, "iff") == 0){ //If
     f = checafprox(f);
-    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+    if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = lexp(f);
-      if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+      if (Pla == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
-        if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+        if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-            f = checafprox(f); //TODO Tratar fim de arquivo
+            f = checafprox(f);
             f = c(f);
             return f;
           } else {
@@ -557,9 +604,9 @@ TFila* cond_stmt(TFila* f){
     } else {
       Erros(262, Pl);
     }
-  } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "brk") == 0){ //Break
+  } else if (Pla == 512 && strcmp(f->d.str, "brk") == 0){ //Break
     f = checafprox(f);
-    if ((f->info & 3840) == 2816){ //;
+    if (Pla == 2816){ //;
       f = checafprox(f);
       return f;
     } else {
@@ -573,9 +620,10 @@ TFila* cond_stmt(TFila* f){
 }
 
 TFila* c(TFila* f){
-  if ((f->info & 3840) == 512 && strcmp(f->d.str, "els") == 0){ //els
+  Pla = (f->info & 3840);
+  if (Pla == 512 && strcmp(f->d.str, "els") == 0){ //els
     f = checafprox(f);
-    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+    if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
       f = checafprox(f);
       f = stmt(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
@@ -587,7 +635,7 @@ TFila* c(TFila* f){
     } else {
       Erros(264, Pl);
     }
-  } else if ((f->info & 3840) == 512 || (f->info & 3840) == 256 || (f->info & 3840) == 3328 || ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0)){
+  } else if (Pla == 512 || Pla == 256 || Pla == 3328 || (Pla == 3072 && strcmp(f->d.str, "}") == 0)){
     return f;
   } else {
     Erros(266, Pl);
@@ -600,14 +648,14 @@ TFila* rept_stmt(TFila* f){
   }
   if ((f->info & 3840) == 512 && strcmp(f->d.str, "for") == 0){
     f = checafprox(f);
-    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+    if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = atri(f);
       f = atri(f);
       f = lexp(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
-        if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+        if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
@@ -627,12 +675,12 @@ TFila* rept_stmt(TFila* f){
     }
   } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "whl") == 0){
     f = checafprox(f);
-    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+    if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = lexp(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
-        if ((f->info & 3840) == 3072 && strcmp(f->d.str, "{") == 0){
+        if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
@@ -662,13 +710,13 @@ TFila* io_stmt(TFila* f){
   }
   if ((f->info & 3840) == 512 && strcmp(f->d.str, "scn") == 0){
     f = checafprox(f);
-    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+    if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
-      if ((f->info & 3840) == 256){ //Id
+      if (Pla == 256){ //Id
         f = checafprox(f);
-        if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
+        if (Pla == 3072 && strcmp(f->d.str, ")") == 0){
           f = checafprox(f);
-          if (((f->info & 3840)) == 2816){ //;
+          if ((Pla) == 2816){ //;
             f = checafprox(f);
             return f;
           } else {
@@ -685,12 +733,12 @@ TFila* io_stmt(TFila* f){
     }
   } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "prt") == 0){
     f = checafprox(f);
-    if ((f->info & 3840) == 3072 && strcmp(f->d.str, "(") == 0){
+    if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = iol(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
-        if ((f->info & 3840) == 2816){ //;
+        if (Pla == 2816){ //;
           f = checafprox(f);
           return f;
         } else {
@@ -712,7 +760,8 @@ TFila* iol(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
-  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1024 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+  Pla = (f->info & 3840);
+  if (Pla == 256 || Pla == 768 || Pla == 1024 || Pla == 1280 || Pla == 1536){
     return checafprox(f);
   } else {
     Erros(267, Pl);
@@ -725,7 +774,7 @@ TFila* atri(TFila* f){
   }
   if ((f->info & 3840) == 256){ //Id
     f = checafprox(f);
-    if ((f->info & 3840) == 2560){ //=
+    if (Pla == 2560){ //=
       f = checafprox(f);
       f = term(f);
       if ((f->info & 3840) == 2816){ //;
@@ -747,7 +796,8 @@ TFila* term(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
-  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+  Pla = (f->info & 3840);
+  if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536){
     f = n(f);
     f = O(f);
     f = R(f);
@@ -761,9 +811,10 @@ TFila* O(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
-  if (((f->info & 3840) == 1792) && strcmp(f->d.str, "!") == 0){
+  Pla = (f->info & 3840);
+  if ((Pla == 1792) && strcmp(f->d.str, "!") == 0){
     return checafprox(f);
-  } else if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536 || (f->info & 3840) == 2816 || (f->info & 3840) == 1792 || (f->info & 3840) == 2048 || (f->info & 3840) == 2304){
+  } else if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536 || Pla == 2816 || Pla == 1792 || Pla == 2048 || Pla == 2304){
     return f;
   } else {
     Erros(269, Pl);
@@ -774,13 +825,14 @@ TFila* R(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
-  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+  Pla = (f->info & 3840);
+  if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536){
     f = term(f);
     f = o(f);
     f = O(f);
     f = R(f);
     return f;
-  } else if ((f->info & 3840) == 2816 || (f->info & 3840) == 1792 || (f->info & 3840) == 2048 || (f->info & 3840) == 2304){
+  } else if (Pla == 2816 || Pla == 1792 || Pla == 2048 || Pla == 2304){
     return f;
   } else {
     Erros(269, Pl);
@@ -791,7 +843,8 @@ TFila* o(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
-  if (((f->info & 3840) == 1792 && !(strcmp(f->d.str, "!") == 0)) || (f->info & 3840) == 2048 || (f->info & 3840) == 2304){
+  Pla = (f->info & 3840);
+  if ((Pla == 1792 && !(strcmp(f->d.str, "!") == 0)) || Pla == 2048 || Pla == 2304){
     return checafprox(f);
   } else {
     Erros(269, Pl);
@@ -802,7 +855,8 @@ TFila* n(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
-  if ((f->info & 3840) == 256 || (f->info & 3840) == 768 || (f->info & 3840) == 1280 || (f->info & 3840) == 1536){
+  Pla = (f->info & 3840);
+  if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536){
     return checafprox(f);
   } else {
     Erros(269, Pl);

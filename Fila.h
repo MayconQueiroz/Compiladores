@@ -83,7 +83,7 @@ void imprimetipo (int V){
     return;
   }
   if (V == 512){
-    printf("P reser\t\t");
+    printf("Pal reser\t");
     return;
   }
   if (V == 768){
@@ -103,15 +103,15 @@ void imprimetipo (int V){
     return;
   }
   if (V == 1792){
-    printf("O Logico\t");
+    printf("Op Logico\t");
     return;
   }
   if (V == 2048){
-    printf("O Aritmetico\t");
+    printf("Op Aritmetico\t");
     return;
   }
   if (V == 2304){
-    printf("O Relacional\t");
+    printf("Op Relacional\t");
     return;
   }
   if (V == 2560){
@@ -137,7 +137,9 @@ void fila_imprime (TFila* fila){ //Varre e imprime
   int Lin = 1, Ax;
   if (fila == NULL){
     printf("Fila Vazia\n");
+    return ;
   }
+  printf("Identificador\tLinha\tValor\n");
   for (p = fila; p != NULL; p = p->prox){
     Lin = Lin + (p->info & 255);
     imprimetipo(p->info);

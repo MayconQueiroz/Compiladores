@@ -14,10 +14,9 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       return 1;
     }
     if (V == 1){
-      printf ("Quantidade invalida de argumentos\n");
-      printf ("Chamada do programa: ");
-      printf("[programa] [arquivo entrada]\n  programa       :\n    Windows: Lexico.exe\n    Linux  : ./Lexico.x\n  ");
-      printf("arquivo entrada: Arquivo de entrada .cnm a ser processado\n  ");
+      printf ("\nChamada do programa: \n");
+      printf("Compilador [opcoes] arquivoentrada\n\n  opcoes      :\n    -d  Debug (Imprime filas e vetores)\n    -h  Mostra ajuda\n");
+      printf("arquivoentrada: Arquivo de entrada .cnm a ser processado (extensao requerida)\n  ");
       return 1;
     }
     if (V == 2){
@@ -131,14 +130,14 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf("Algo deu errado na analise sintatica - Linha %i", L);
       exit(1);
     }
-    if (V == 27){
-      printf(" - Linha %i", L);
+    if (V == 271){
+      printf("Arquivo Vazio");
       exit(1);
     }
-    if (V == 27){
+    /*if (V == 27){
       printf(" - Linha %i", L);
       exit(1);
-    }
+    }*/
   }
   /*
   if (V == 142){
@@ -147,5 +146,5 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
   }
   */
   printf ("Problemas com processamento de erros\n");
-  return 1;
+  return -1;
 }
