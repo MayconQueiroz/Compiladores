@@ -182,8 +182,11 @@ int main(int argc, char *argv[]){
   //Variaveis que podem ser aproveitadas:
   //int R, Pla, h, I
   //char U, L[256]
-  if (deb == 1){
+  /*if (deb == 1){
     fila_imprime(Fini); //Impressao da fila (para debug)
+  }*/
+  if (deb == 1){
+    printf("Identificador\tLinha\tValor\n");
   }
   lista = lista_apagar(lista);
   Pl = 1; //Volta pra primeira linha
@@ -469,9 +472,17 @@ TFila* stmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
+      if (deb == 1){
+        imprimevalor(f, Pl);
+        printf("<stmt> -> <decl_stmt><mstmt>\n");
+      }
       f = decl_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "iff") == 0 || strcmp(f->d.str, "brk") == 0){
+      if (deb == 1){
+        imprimevalor(f, Pl);
+        printf("<stmt> -> <cond_stmt><mstmt>\n"); 
+      }
       f = cond_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "for") == 0 || strcmp(f->d.str, "whl") == 0){
@@ -500,6 +511,7 @@ TFila* mstmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
+      imprimevalor(f, Pl)
       f = decl_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "iff") == 0 || strcmp(f->d.str, "brk") == 0){

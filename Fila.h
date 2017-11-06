@@ -155,9 +155,8 @@ void fila_imprime (TFila* fila){ //Varre e imprime
   }
 }
 
-void imprimevalor (TFila* fila){
-  int Ax, Lin;
-  Lin = Lin + (fila->info & 255);
+void imprimevalor (TFila* fila, int Lin){
+  int Ax;
   imprimetipo(fila->info);
   Ax = fila->info & 3840;
   printf("%i\t", Lin);
