@@ -7,14 +7,14 @@ scn(a);
 
 #Comentario vai sumir 5s54df65a489@!#$%¨&*#*(@()*&)
 iff (a == 2){
-  tEste12 = 20.1254;
+  tEste12 = 20.625;
   prt("Teste de impressao");
   b = 0;
   whl (b <= 10){
     prt("b=");
     prt(b);
     prt("\n");
-    tEste12 = tEste12 b + a / 50 ! *;
+    tEste12 = tEste12 b + a - 50 ! *;
     b = b 1 +;
     a = a 2 >> z +;
   }
@@ -39,5 +39,3 @@ c = a b &;
 iff (c != 0){
   prt("Verdadeiro\n");
 }
-
-+

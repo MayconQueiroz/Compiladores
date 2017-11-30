@@ -161,11 +161,11 @@ void imprimevalor (TFila* fila, int Lin){
   Ax = fila->info & 3840;
   printf("%i\t", Lin);
   if (Ax == 256 || Ax == 1024 || Ax == 1280 || Ax == 3328){
-    printf("%i\n", fila->d.i);
+    printf("%i\t", fila->d.i);
   } else if (Ax == 1536){
-    printf("%f\n", fila->d.f);
+    printf("%f\t", fila->d.f);
   } else{
-    printf("%s\n", fila->d.str);
+    printf("%s\t", fila->d.str);
   }
 }
 

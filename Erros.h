@@ -13,10 +13,24 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf ("Erro nao catalogado");
       return 1;
     }
-    if (V == 1){
+    if (V == 1 && L == 0){ //Compilador normal
       printf ("\nChamada do programa: \n");
-      printf("Compilador [opcoes] arquivoentrada\n\n  opcoes      :\n    -d  Debug (Imprime filas e vetores)\n    -h  Mostra ajuda\n");
+      printf("Compilador arquivoentrada\n\n");
       printf("arquivoentrada: Arquivo de entrada .cnm a ser processado (extensao requerida)\n  ");
+      return 1;
+    }
+    if (V == 1 && L == 1){ //Compilador debug
+      printf ("\nChamada do programa: \n");
+      printf("Compilador arquivoentrada opcao\n\n   ");
+      printf("arquivoentrada: Arquivo de entrada .cnm a ser processado (extensao requerida)\n   ");
+      printf("opcao         : Mostra o debug de partes especificas do processo\n");
+      printf("     1 - Mostra debug da analise lexica\n");
+      printf("     2 - Mostra debug da analise sintatica\n");
+      printf("     3 - Mostra debug das analises lexica e sintatica\n");
+      printf("     4 - Mostra debug da analise semantica\n");
+      printf("     5 - Mostra debug das analises lexica e semantica\n");
+      printf("     6 - Mostra debug das analises sintatica e semantica\n");
+      printf("     7 - Mostra debug das analises lexica, sintatica e semantica\n");
       return 1;
     }
     if (V == 2){

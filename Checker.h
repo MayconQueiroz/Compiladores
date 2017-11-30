@@ -119,7 +119,7 @@ int NumeroCorecto(char* N, int T){
   }
   if (T == 1){ //Numero Inteiro
     A = atoi(N);
-    itoa(A, C, 10);
+    sprintf(C, "%d", A);
     while (i == 0){ //Compara a string do numero original e o que oi convertido para string, se der diferente retorna erro
       if (N[j] != C[j] || j == 255){
         return 1;

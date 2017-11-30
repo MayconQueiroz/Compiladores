@@ -24,6 +24,7 @@ int QSTR = 0; //Quantidade de strings no arquivo de strings
 int QVAR = 0; //Quantidade de variaveis
 char *VAR; //Vetor a ser alocado depois para informacoes dos ids
 int deb = 0; //Debug mode
+int deb2 = 0; //Auxiliar debug
 
 //Declaracao de funcoes usadas a posteriori
 int leId();
@@ -37,46 +38,19 @@ TFila* stmt(TFila* f);
 
 int main(int argc, char *argv[]){
   int I, R, h = 0, i;
-  if (argc == 2 || argc == 3){
-    for (i = 1; i < argc; i++) {
-      if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "/h") == 0 || strcmp(argv[i], "/H") == 0 || strcmp(argv[i], "-H") == 0  || strcmp(argv[i], "/?") == 0) {
-        return Erros(1, 0);
-      }
-      if (strcmp(argv[i], "-d") == 0 || strcmp(argv[i], "/d") == 0 || strcmp(argv[i], "/D") == 0 || strcmp(argv[i], "-D") == 0) {
-        deb = 1;
-        R = i;
-      }
-    }
-    if (deb == 1){ //Debug mode on
-      if (R == 1){
-        if (strlen(argv[2]) < 5){
-          return Erros(1, 0);
-        }
-      } else if (R == 2){
-        if (strlen(argv[1]) < 5){
-          return Erros(1, 0);
-        }
-      }
-    } else {
-      if (argc == 3){
-        return Erros(1, 0);
-      }
-    }
-	} else {
-    return Erros(1, 0);
+  if (argc != 3){
+    Erros(1, 1);
+	}
+
+  //Conversao do pedido
+  deb2 = atoi(argv[2]);
+  if (deb2 < 0 || deb2 > 8){
+    printf("Opcao Invalida (0 < op < 8)\n");
+    Erros(1, 1);
   }
 
   //Abertura Arquivos
-  if (deb == 1){ //Debug mode on
-    if (R == 1){
-      IN = fopen(argv[2], "r");
-    }
-    else if (R == 2){
-      IN = fopen(argv[1], "r");
-    }
-  } else {
-    IN = fopen(argv[1], "r");
-  }
+  IN = fopen(argv[1], "r");
   OUT = fopen("auxiliar.snm", "w");
   if (IN == NULL){
     return Erros(2, 0);
@@ -182,8 +156,13 @@ int main(int argc, char *argv[]){
   //Variaveis que podem ser aproveitadas:
   //int R, Pla, h, I
   //char U, L[256]
-  if (deb == 1){
+  /*if (deb == 1){
     fila_imprime(Fini); //Impressao da fila (para debug)
+  }*/
+  deb = (deb2 & 2) >> 1;
+  printf("deb2 = %i, deb = %i\n", deb2, deb);
+  if (deb == 1){
+    printf("Identificador\tLinha\tValor\n");
   }
   lista = lista_apagar(lista);
   Pl = 1; //Volta pra primeira linha
@@ -462,6 +441,9 @@ TFila* checafprox(TFila* f){
   f = f->prox;
   Pl = Pl + (f->info & 255);
   Pla = (f->info & 3840);
+  if (deb == 1){
+    imprimevalor(f, Pl);
+  }
   return f;
 }
 
@@ -469,21 +451,41 @@ TFila* stmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
+      if (deb == 1){
+        imprimevalor(f, Pl);
+        printf("<stmt> -> <decl_stmt> <mstmt>\n");
+      }
       f = decl_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "iff") == 0 || strcmp(f->d.str, "brk") == 0){
+      if (deb == 1){
+        imprimevalor(f, Pl);
+        printf("<stmt> -> <cond_stmt> <mstmt>\n");
+      }
       f = cond_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "for") == 0 || strcmp(f->d.str, "whl") == 0){
+      if (deb == 1){
+        imprimevalor(f, Pl);
+        printf("<stmt> -> <rept_stmt> <mstmt>\n");
+      }
       f = rept_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "prt") == 0 || strcmp(f->d.str, "scn") == 0){
+      if (deb == 1){
+        imprimevalor(f, Pl);
+        printf("<stmt> -> <io_stmt> <mstmt>\n");
+      }
       f = io_stmt(f);
       f = mstmt(f);
     } else {
       Erros(257, Pl);
     }
   } else if (Pla == 256){
+    if (deb == 1){
+      imprimevalor(f, Pl);
+      printf("<stmt> -> <atri> <mstmt>\n");
+    }
     f = atri(f);
     f = mstmt(f);
   } else {
@@ -500,26 +502,48 @@ TFila* mstmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
+      if (deb == 1){
+        printf("<mstmt> -> <decl_stmt> <mstmt>\n");
+      }
       f = decl_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "iff") == 0 || strcmp(f->d.str, "brk") == 0){
+      if (deb == 1){
+        printf("<mstmt> -> <cond_stmt> <mstmt>\n");
+      }
       f = cond_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "for") == 0 || strcmp(f->d.str, "whl") == 0){
+      if (deb == 1){
+        printf("<mstmt> -> <rept_stmt> <mstmt>\n");
+      }
       f = rept_stmt(f);
       f = mstmt(f);
     } else if (strcmp(f->d.str, "prt") == 0 || strcmp(f->d.str, "scn") == 0){
+      if (deb == 1){
+        printf("<mstmt> -> <io_stmt> <mstmt>\n");
+      }
       f = io_stmt(f);
       f = mstmt(f);
     } else {
       Erros(257, Pl);
     }
   } else if (Pla == 256){ //Id
+    if (deb == 1){
+      printf("<mstmt> -> <atri> <mstmt>\n");
+    }
     f = atri(f);
     f = mstmt(f);
   } else if (Pla == 3072 && strcmp(f->d.str, "}") == 0){
+    if (deb == 1){
+      printf("<mstmt> -> .\n");
+    }
     return f;
   } else if (Pla == 3328){ //Fim de arquivo
+    if (deb == 1){
+      imprimevalor(f, Pl);
+      printf("<mstmt> -> .\n");
+    }
     return f;
   } else {
     imprimeextenso(Pla);
@@ -531,13 +555,25 @@ TFila* mstmt(TFila* f){
 TFila* decl_stmt(TFila* f){
   char A = 0;
   if (strcmp(f->d.str, "int") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<decl_stmt> -> int id ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     A = 1;
   } else if (strcmp(f->d.str, "flt") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<decl_stmt> -> flt id ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     A = 2;
   } else if (strcmp(f->d.str, "chr") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<decl_stmt> -> chr id ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     A = 4;
   } else {
     printf ("Declaracao de variavel esperada\n");
@@ -549,6 +585,7 @@ TFila* decl_stmt(TFila* f){
     Erros(259, Pl);
   }
   f = checafprox(f);
+  printf("\n");
   if (Pla == 2816){ //;
     f = checafprox(f);
   } else {
@@ -563,7 +600,11 @@ TFila* lexp(TFila* f){
   }
   Pla = f->info & 3840;
   if (Pla == 256){ //Confirmacao se e um id
+    if (deb == 1){
+      printf("<lexp> -> id or <n>\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 2304){ //Operador relacional
       f = checafprox(f);
       f = n(f);
@@ -579,14 +620,26 @@ TFila* lexp(TFila* f){
 TFila* cond_stmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512 && strcmp(f->d.str, "iff") == 0){ //If
+    if (deb == 1){
+      printf("\t\t\t\t<cond_stmt> -> iff ( <lexp> ) { <stmt> } <c>\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = lexp(f);
       if (Pla == 3072 && strcmp(f->d.str, ")") == 0){
+        printf("\n");
         f = checafprox(f);
+        printf("\n");
         if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
           f = checafprox(f);
+          printf("%c%c%c%c%c%c", 8, 8, 8, 8, 8, 8);
+          printf("%c%c%c%c%c%c", 8, 8, 8, 8, 8, 8);
+          printf("%c%c%c%c%c%c", 8, 8, 8, 8, 8, 8);
+          printf("%c%c%c%c%c%c", 8, 8, 8, 8, 8, 8);
+          printf("%c%c%c%c%c%c", 8, 8, 8, 8, 8, 8);
+          printf("%c%c", 8, 8);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
             f = checafprox(f);
@@ -605,7 +658,11 @@ TFila* cond_stmt(TFila* f){
       Erros(262, Pl);
     }
   } else if (Pla == 512 && strcmp(f->d.str, "brk") == 0){ //Break
+    if (deb == 1){
+      printf("\t\t\t\t<cond_stmt> -> brk ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 2816){ //;
       f = checafprox(f);
       return f;
@@ -622,12 +679,17 @@ TFila* cond_stmt(TFila* f){
 TFila* c(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512 && strcmp(f->d.str, "els") == 0){ //els
+    if (deb == 1){
+      imprimevalor(f, Pl);
+      printf("<c> -> els { <stmt> }\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
       f = checafprox(f);
       f = stmt(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-        f = checafprox(f); //TODO tratar fim de arquivo
+        f = checafprox(f);
         return f;
       } else {
         Erros(265, Pl);
@@ -636,6 +698,9 @@ TFila* c(TFila* f){
       Erros(264, Pl);
     }
   } else if (Pla == 512 || Pla == 256 || Pla == 3328 || (Pla == 3072 && strcmp(f->d.str, "}") == 0)){
+    if (deb == 1){
+      printf("<c> -> .\n");
+    }
     return f;
   } else {
     Erros(266, Pl);
@@ -647,7 +712,11 @@ TFila* rept_stmt(TFila* f){
     Erros(256, Pl);
   }
   if ((f->info & 3840) == 512 && strcmp(f->d.str, "for") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<rept_stmt> -> for ( <atri> ; <lexp> ; <atri> ) { <stmt> }\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = atri(f);
@@ -655,11 +724,12 @@ TFila* rept_stmt(TFila* f){
       f = lexp(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
+        printf("\n");
         if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-            f = checafprox(f); //TODO Tratar fim de arquivo
+            f = checafprox(f);
             return f;
           } else {
             Erros(265, Pl);
@@ -674,17 +744,22 @@ TFila* rept_stmt(TFila* f){
       Erros(262, Pl);
     }
   } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "whl") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<rept_stmt> -> whl ( <lexp> ) { <stmt> }\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = lexp(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
+        printf("\n");
         if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-            f = checafprox(f); //TODO Tratar fim de arquivo
+            f = checafprox(f);
             return f;
           } else {
             Erros(265, Pl);
@@ -709,13 +784,20 @@ TFila* io_stmt(TFila* f){
     Erros(256, Pl);
   }
   if ((f->info & 3840) == 512 && strcmp(f->d.str, "scn") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<io_stmt> -> scn ( id ) ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
+      printf("\n");
       if (Pla == 256){ //Id
         f = checafprox(f);
+        printf("\n");
         if (Pla == 3072 && strcmp(f->d.str, ")") == 0){
           f = checafprox(f);
+          printf("\n");
           if ((Pla) == 2816){ //;
             f = checafprox(f);
             return f;
@@ -732,12 +814,17 @@ TFila* io_stmt(TFila* f){
       Erros(262, Pl);
     }
   } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "prt") == 0){
+    if (deb == 1){
+      printf("\t\t\t\t<io_stmt> -> prt ( <io> ) ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
       f = iol(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
+        printf("\n");
         if (Pla == 2816){ //;
           f = checafprox(f);
           return f;
@@ -756,12 +843,34 @@ TFila* io_stmt(TFila* f){
   }
 }
 
+void iolaux(int A){
+  if (A == 256){
+    printf("id\n");
+  }
+  if (A == 768){
+    printf("ch\n");
+  }
+  if (A == 1024){
+    printf("str\n");
+  }
+  if (A == 1280){
+    printf("ni\n");
+  }
+  if (A == 1536){
+    printf("nd\n");
+  }
+}
+
 TFila* iol(TFila* f){
   if (f == NULL){
     Erros(256, Pl);
   }
   Pla = (f->info & 3840);
   if (Pla == 256 || Pla == 768 || Pla == 1024 || Pla == 1280 || Pla == 1536){
+    if (deb == 1){
+      printf("<io> -> ");
+      iolaux(Pla);
+    }
     return checafprox(f);
   } else {
     Erros(267, Pl);
@@ -773,7 +882,11 @@ TFila* atri(TFila* f){
     Erros(256, Pl);
   }
   if ((f->info & 3840) == 256){ //Id
+    if (deb == 1){
+      printf("\t\t\t\t<atri> -> id = <term> ;\n");
+    }
     f = checafprox(f);
+    printf("\n");
     if (Pla == 2560){ //=
       f = checafprox(f);
       f = term(f);
@@ -798,6 +911,9 @@ TFila* term(TFila* f){
   }
   Pla = (f->info & 3840);
   if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536){
+    if (deb == 1){
+      printf("<term> -> <n> <O> <R>\n\t\t\t\t");
+    }
     f = n(f);
     f = O(f);
     f = R(f);
@@ -813,8 +929,14 @@ TFila* O(TFila* f){
   }
   Pla = (f->info & 3840);
   if ((Pla == 1792) && strcmp(f->d.str, "!") == 0){
+    if (deb == 1){
+      printf("<O> -> !\n");
+    }
     return checafprox(f);
   } else if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536 || Pla == 2816 || Pla == 1792 || Pla == 2048 || Pla == 2304){
+    if (deb == 1){
+      printf("<O> -> .\n\t\t\t\t");
+    }
     return f;
   } else {
     Erros(269, Pl);
@@ -827,15 +949,30 @@ TFila* R(TFila* f){
   }
   Pla = (f->info & 3840);
   if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536){
+    if (deb == 1){
+      printf("<R> -> <term> <o> <O> <R>\n\t\t\t\t");
+    }
     f = term(f);
     f = o(f);
     f = O(f);
     f = R(f);
     return f;
   } else if (Pla == 2816 || Pla == 1792 || Pla == 2048 || Pla == 2304){
+    if (deb == 1){
+      printf("<R> -> .\n");
+    }
     return f;
   } else {
     Erros(269, Pl);
+  }
+}
+
+void oaux(int A){
+  if (A == 2048){
+    printf("oa\n");
+  }
+  if (A == 2304){
+    printf("ol\n");
   }
 }
 
@@ -845,6 +982,10 @@ TFila* o(TFila* f){
   }
   Pla = (f->info & 3840);
   if (Pla == 2048 || Pla == 2304){
+    if (deb == 1){
+      printf("<o> -> ");
+      oaux(Pla);
+    }
     return checafprox(f);
   } else {
     Erros(269, Pl);
@@ -857,6 +998,10 @@ TFila* n(TFila* f){
   }
   Pla = (f->info & 3840);
   if (Pla == 256 || Pla == 768 || Pla == 1280 || Pla == 1536){
+    if (deb == 1){
+      printf("<n> -> ");
+      iolaux(Pla);
+    }
     return checafprox(f);
   } else {
     Erros(269, Pl);
