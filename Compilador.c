@@ -23,6 +23,7 @@ int Pl; //Posicao da linha (Contado com \n)
 int Pla; //Auxiliar de Pl e curinga apos analise lexica
 TFila* Fini; //Ponteiros para inicio e fim da fila de tokens
 TFila* Ffin; //Fin = posicao a inserir
+TFila* Decl; //Ponteiro para posicao onde se inserem tokens
 Elemento* lista; //Lista de id's
 int QSTR = 0; //Quantidade de strings no arquivo de strings
 int QVAR = 0; //Quantidade de variaveis
@@ -475,7 +476,15 @@ void imprimeextenso (int V){
     return;
   }
   if (V == 3328){
-    printf("Fim do Arquivo\t");
+    printf("Fim Arquivo ");
+    return;
+  }
+  if (V == 3584){
+    printf("Id int Temp\t");
+    return;
+  }
+  if (V == 3840){
+    printf("Id flt Temp\t");
     return;
   }
 }
@@ -484,7 +493,7 @@ TFila* mstmt(TFila* f);
 TFila* decl_stmt(TFila* f);
 TFila* lexp(TFila* f);
 TFila* cond_stmt(TFila* f);
-TFila* c(TFila* f);
+TFila* c(TFila* f, int LGENIF);
 TFila* rept_stmt(TFila* f);
 TFila* io_stmt(TFila* f);
 TFila* iol(TFila* f);
@@ -507,6 +516,14 @@ TFila* checafprox(TFila* f){
   f = f->prox;
   Pl = Pl + (f->info & 255);
   Pla = (f->info & 3840);
+  /*imprimeextenso(f->info);
+  if (Pla == 256 || Pla == 1024 || Pla == 1280 || Pla == 3328){
+    printf("%i\n", f->d.i);
+  } else if (Pla == 1536){
+    printf("%f\n", f->d.f);
+  } else{
+    printf("%s\n", f->d.str);
+  }*/
   return f;
 }
 
@@ -603,6 +620,7 @@ TFila* decl_stmt(TFila* f){
   } else {
     Erros(260, Pl);
   }
+  Decl = f;
   return f;
 }
 
@@ -657,9 +675,9 @@ TFila* cond_stmt(TFila* f){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-            fprintf(INM, "gto L%i\n:L%i", Ind+2, Ind+1);
+            fprintf(INM, "gto L%i\n:L%i\n", Ind+2, Ind+1);
             f = checafprox(f);
-            f = c(f);
+            f = c(f, Ind+2);
             return f;
           } else {
             Erros(265, Pl);
@@ -692,19 +710,17 @@ TFila* cond_stmt(TFila* f){
   return NULL;
 }
 
-TFila* c(TFila* f){
+TFila* c(TFila* f, int LGENIF){
   int Ind;
   Pla = (f->info & 3840);
   if (Pla == 512 && strcmp(f->d.str, "els") == 0){ //els
-    Ind = LGEN;
-    LGEN += 1;
     f = checafprox(f);
     if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
       f = checafprox(f);
       f = stmt(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
         f = checafprox(f); //TODO tratar fim de arquivo
-        fprintf(INM, ":L%i\n", Ind);
+        fprintf(INM, ":L%i\n", LGENIF);
         return f;
       } else {
         Erros(265, Pl);
@@ -713,7 +729,7 @@ TFila* c(TFila* f){
       Erros(264, Pl);
     }
   } else if (Pla == 512 || Pla == 256 || Pla == 3328 || (Pla == 3072 && strcmp(f->d.str, "}") == 0)){
-    fprintf(INM, ":L%i\n", Ind);
+    fprintf(INM, ":L%i\n", LGENIF);
     return f;
   } else {
     Erros(266, Pl);
@@ -767,13 +783,13 @@ TFila* rept_stmt(TFila* f){
     f = checafprox(f);
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
-      fprintf(INM, "iff ");
-      f = lexp(f);
       Ind = LGEN;
-      LGEN += 2;
+      LGEN += 3;
+      fprintf(INM, ":L%i\niff ", Ind);
+      f = lexp(f);
       Tem = RSTMTC;
       RSTMTC = Ind + 1;
-      fprintf(INM, "gto L%i\ngto L%i\n:L%i\n", Ind, Ind+1, Ind);
+      fprintf(INM, "gto L%i\ngto L%i\n:L%i\n", Ind+1, Ind+2, Ind+1);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
         if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
@@ -781,7 +797,7 @@ TFila* rept_stmt(TFila* f){
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
             f = checafprox(f); //TODO Tratar fim de arquivo
-            fprintf(INM, ":L%i\n", Ind+1);
+            fprintf(INM, "gto L%i\n:L%i\n", Ind, Ind+2);
             RSTMTC = Tem;
             return f;
           } else {
@@ -889,10 +905,10 @@ TFila* iol(TFila* f){
       fprintf(INM, "\'%s\'\n", f->d.str);
     } else if (Pla == 1024) { //String
       fprintf(INM, "\"");
-      fscanf(OUT0, "%c", U);
+      fscanf(OUT0, "%c", &U);
       while (U != '\n'){
         fprintf(INM, "%c", U);
-        fscanf(OUT0, "%c", U);
+        fscanf(OUT0, "%c", &U);
       }
       fprintf(INM, "\"\n");
     } else if (Pla == 1280) { //Inteiro
@@ -1140,11 +1156,23 @@ TFila* n(TFila* f){
     if ((Pla == 256 && VAR[f->d.i] == 2) || Pla == 1536){ //Uso de float
       fltuse = 1;
     }
-    if (Pla == 256 ||  Pla == 1280){ //Insercoes na pilha de atribuicoes
+    if (Pla == 256){ //Insercoes na pilha de atribuicoes
+      if ((VAR[pilha->d.i] & 1) != 0 || Pla == 3584){ //Id int
+        fprintf(INM, "i%i ", pilha->d.i);
+      } else if ((VAR[pilha->d.i] & 2) != 0 || Pla == 3840) { //Id flt
+        fprintf(INM, "f%i ", pilha->d.i);
+      } else if ((VAR[pilha->d.i] & 4) != 0) { //Id chr
+        fprintf(INM, "c%i ", pilha->d.i);
+      }
+      pilha = pilha_insereint(pilha, f->info, f->d.i);
+    } else if (Pla == 1280){
+      fprintf(INM, "%i ", f->d.i);
       pilha = pilha_insereint(pilha, f->info, f->d.i);
     } else if (Pla == 1536){
+      fprintf(INM, "%f ", f->d.f);
       pilha = pilha_insereflt(pilha, f->info, f->d.f);
     } else if (Pla == 768){
+      fprintf(INM, "\'%s\' ", f->d.str);
       pilha = pilha_inserestr(pilha, f->info, f->d.str);
     }
     return checafprox(f);

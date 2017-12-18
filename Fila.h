@@ -79,55 +79,63 @@ TFila* fila_remove (TFila* fila){ //Remove a primeira posicao
 void imprimetipo (int V){
   V = V & 3840;
   if (V == 256){
-    printf("Id\t\t");
+    printf("Variavel ");
     return;
   }
   if (V == 512){
-    printf("Pal reser\t");
+    printf("Comando ");
     return;
   }
   if (V == 768){
-    printf("Caractere\t");
+    printf("Caractere ");
     return;
   }
   if (V == 1024){
-    printf("String\t\t");
+    printf("String ");
     return;
   }
   if (V == 1280){
-    printf("Inteiro\t\t");
+    printf("Inteiro ");
     return;
   }
   if (V == 1536){
-    printf("Decimal\t\t");
+    printf("Decimal ");
     return;
   }
   if (V == 1792){
-    printf("Op Logico\t");
+    printf("Op Logico ");
     return;
   }
   if (V == 2048){
-    printf("Op Aritmetico\t");
+    printf("Op Aritm ");
     return;
   }
   if (V == 2304){
-    printf("Op Relacional\t");
+    printf("Op Relac ");
     return;
   }
   if (V == 2560){
-    printf("Atribuicao\t");
+    printf("Atribuicao ");
     return;
   }
   if (V == 2816){
-    printf("P Virg\t\t");
+    printf("Del sentenca ");
     return;
   }
   if (V == 3072){
-    printf("Del Bloco\t");
+    printf("Del Bloco ");
     return;
   }
   if (V == 3328){
-    printf("Fim Arqui\t");
+    printf("Fim Arquivo ");
+    return;
+  }
+  if (V == 3584){
+    printf("Id int Temp\t");
+    return;
+  }
+  if (V == 3840){
+    printf("Id flt Temp\t");
     return;
   }
 }

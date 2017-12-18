@@ -1,1 +1,59 @@
-i
+i0
+i1
+i2
+c3
+f4
+scn i0
+iff i0 == 2 gto L0
+gto L1
+:L0
+f4 = f5
+prt "Teste de impressao"
+i1 = i5
+:L2
+iff i1 <= 10 gto L3
+gto L4
+:L3
+prt "b="
+prt i1
+prt "\n"
+f5 = i1 + i1
+f6 = i0 / i0
+i7 = ! 50
+f8 = * f4 = f9
+f9 = 1 + 1
+i1 = i10
+f10 = 2 ! 2
+i0 = i11
+gto L2
+:L4
+prt "tEste12="
+prt f4
+prt "\n"
++++gto L2
+:L1
+i2 = i11
+iff i2 < 20 gto L5
+gto L6
+:L5
+scn c3
+prt "Grn="
+prt c3
+prt "\n"
+f11 = 1 + 1
+i2 = i12
+gto L5
+:L6
+c3 = i12
+...:L2
+i0 = i12
+i1 = i12
+f12 = i1 ! i1
+i2 = i13
+iff i2 != 0 gto L7
+gto L8
+:L7
+prt "Verdadeiro\n"
++++gto L9
+:L8
+:L9
