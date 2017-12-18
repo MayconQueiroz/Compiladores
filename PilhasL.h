@@ -3,21 +3,21 @@
 
 typedef struct pilha Pilha;
 
-union Dado {
+union Dado2 {
    int i;
    float f;
-   char c;
+   char str[4];
 };
 
 struct pilha{
   int info;
-  union Dado d;
+  union Dado2 d;
   Pilha* prox;
 };
 
 struct Pilha{
   int info;
-  union Dado d;
+  union Dado2 d;
   Pilha* prox;
 };
 
@@ -37,10 +37,10 @@ Pilha* pilha_insereflt(Pilha* pilha, int val, float V){
   return novo;
 }
 
-Pilha* pilha_inserechr(Pilha* pilha, int val, char V){
+Pilha* pilha_inserestr(Pilha* pilha, int val, char* V){
   Pilha* novo = (Pilha*) malloc(sizeof(Pilha)); //Reserva um espaco para novo
   novo->info = val; //Atribui a novo, o valor passado
-  novo->d.c = V;
+  strcpy(novo->d.str, V);
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
   return novo;
 }

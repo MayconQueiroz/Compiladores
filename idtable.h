@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 typedef struct elemento Elemento;
-FILE *IN;
 
 struct elemento{
   int info;

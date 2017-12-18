@@ -12,9 +12,11 @@ Numero Uni Identificacao (Simbolo(s))
 2816   str Delimitador de sentenca (;)
 3072   str Delimitador de bloco ({, }, (, ))
 3328   int Delimitador de fim de arquivo
+3584   int Id int nao tabelado
+3840   int Id flt nao tabelado
 
-Id
-Palavra
+Variavel
+Comando
 Caractere
 String
 Inteiro

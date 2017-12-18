@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <windows.h>
+#include <conio.h>
 #include "Erros.h"
 #include "Checker.h"
 #include "Fila.h"
@@ -11,8 +13,8 @@
 * Recebe codigo.cnm
 */
 
-FILE *IN; //Arquivo de entrada
-FILE *OUT; //Arquivo de strings
+FILE *IN1; //Arquivo de entrada
+FILE *OUT0; //Arquivo de strings
 FILE *INM; //Arquivo de codigo intermediario
 
 char U; //Caractere sendo lido
@@ -78,20 +80,20 @@ int main(int argc, char *argv[]){
   //Abertura Arquivos
   if (deb == 1){ //Debug mode on
     if (R == 1){
-      IN = fopen(argv[2], "r");
+      IN1 = fopen(argv[2], "r");
     }
     else if (R == 2){
-      IN = fopen(argv[1], "r");
+      IN1 = fopen(argv[1], "r");
     }
   } else {
-    IN = fopen(argv[1], "r");
+    IN1 = fopen(argv[1], "r");
   }
-  OUT = fopen("auxiliar.snm", "w");
+  OUT0 = fopen("auxiliar.snm", "w");
   INM = fopen("CodInter.inm", "w");
-  if (IN == NULL){
+  if (IN1 == NULL){
     return Erros(2, 0);
   }
-  if (OUT == NULL){
+  if (OUT0 == NULL){
     return Erros(3, 0);
   }
   if (INM == NULL){
@@ -105,8 +107,8 @@ int main(int argc, char *argv[]){
   lista = lista_cria();
 
   //Leitura Codigo Fonte
-  while (!feof(IN)){
-    fscanf (IN, "%c", &U);
+  while (!feof(IN1)){
+    fscanf (IN1, "%c", &U);
     I = QueEso(U); //Funcao que retorna codigo de caractere (vide Checker.h)
     if (I == 0){ //Numero (Inteiro ou decimal)
       R = leNumero();
@@ -124,18 +126,20 @@ int main(int argc, char *argv[]){
         return Erros(129, Pl);
       }
     } else if (I == 2){ //Simbolo
-      if (U == '\"'){ //Inicio de string
-        fscanf (IN, "%c", &U);
+      if (U == ' '){
+        //Do nothing
+      } else if (U == '\"'){ //Inicio de string
+        fscanf (IN1, "%c", &U);
         if (U == '\"'){ //Aspas imediatamente apos outras (Ilegal)
-          printf("Entrei aqui pras aspas\n");
+          //printf("Entrei aqui pras aspas\n");
           apagaTudo();
           return Erros(130, Pl);
         }
-        while (U != '\"' && !feof(IN)){ //Imprime toda a string no arquivo de saida
-          fprintf(OUT, "%c", U);
-          fscanf (IN, "%c", &U);
+        while (U != '\"' && !feof(IN1)){ //Imprime toda a string no arquivo de saida
+          fprintf(OUT0, "%c", U);
+          fscanf (IN1, "%c", &U);
         }
-        fprintf(OUT, "\n"); //Quebra linha
+        fprintf(OUT0, "\n"); //Quebra linha
         Pla = (Pla & 255) + 1024;
         Ffin = fila_insereint(Ffin, Pla, QSTR);
         Pla = 0;
@@ -147,8 +151,8 @@ int main(int argc, char *argv[]){
           return Erros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
         }
       } else if (U == '#'){ //Comentario
-        while (U != '\n' && !feof(IN)){ //Enquanto nao for o fim do arquivo ou quebra de linha
-          fscanf (IN, "%c", &U);
+        while (U != '\n' && !feof(IN1)){ //Enquanto nao for o fim do arquivo ou quebra de linha
+          fscanf (IN1, "%c", &U);
         }
         Pl++;
         Pla++;
@@ -156,7 +160,7 @@ int main(int argc, char *argv[]){
           return Erros(141 , Pl-Pla); //Pl-Pla para passar a linha que comeca o problema
         }
       } else if (U == '\''){ //Caractere entre aspas simples
-        fscanf (IN, "%c", &U);
+        fscanf (IN1, "%c", &U);
         if (U == '\''){ //Aspas imediatamente apos outras (Ilegal)
           apagaTudo();
           return Erros(130, Pl);
@@ -168,7 +172,7 @@ int main(int argc, char *argv[]){
         }
         L[0] = U;
         L[1] = '\0';
-        fscanf (IN, "%c", &U);
+        fscanf (IN1, "%c", &U);
         if (U != '\''){ //Nao fecha com aspas simples
           apagaTudo();
           return Erros(142, Pl);
@@ -181,7 +185,6 @@ int main(int argc, char *argv[]){
       }
     } else {
       apagaTudo();
-      printf ("\"%c\" ", U);
       return Erros(128, Pl);
     }
     if (h == 0 && Ffin != NULL){
@@ -195,14 +198,17 @@ int main(int argc, char *argv[]){
   }
 
   Ffin = fila_insereint(Ffin, 3328, 0);
+  if (deb == 1){
+    fila_imprime(Fini); //Impressao da fila (para debug)
+  }
 
   //////////////////////////////////////////////// Fim Analise Lexica
   //Variaveis que podem ser aproveitadas:
   //int R, Pla, h, I
   //char U, L[256]
-  fclose(OUT);
-  OUT = fopen("auxiliar.snm", "r");
-  if (OUT == NULL){
+  fclose(OUT0);
+  OUT0 = fopen("auxiliar.snm", "r");
+  if (OUT0 == NULL){
     return Erros(5, 0);
   }
   if (deb == 1){
@@ -215,6 +221,12 @@ int main(int argc, char *argv[]){
   Pl = Pl + (Fini->info & 255);
   //Alocacao do vetor de Variaveis
   VAR = (char *) calloc(QVAR, sizeof(char));
+  if (deb == 1){
+    for (i = 0; i < QVARold; i++) {
+      printf("VAR[%i] = %u. ", i, VAR[i]);
+    }
+    printf("\n");
+  }
 
   Ffin = stmt(Fini); //Regras da gramatica
 
@@ -222,6 +234,7 @@ int main(int argc, char *argv[]){
     for (i = 0; i < QVARold; i++) {
       printf("VAR[%i] = %u. ", i, VAR[i]);
     }
+    printf("\n");
   }
   if (!((Ffin->info & 3840) == 3328)){
     Erros(256, Pl);
@@ -238,34 +251,34 @@ void optok(){
   int i = 1;
   L[0] = U;
   if (U == '<'){ //<< ou <=
-    fscanf (IN, "%c", &U);
+    fscanf (IN1, "%c", &U);
     if (U == '<' || U == '='){
       L[1] = U;
       i = 2;
     }
   }else if (U == '>'){ //>= ou >>
-    fscanf (IN, "%c", &U);
+    fscanf (IN1, "%c", &U);
     if (U == '>' || U == '='){
       L[1] = U;
       i = 2;
     }else {
-      fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+      fseek(IN1, -1, SEEK_CUR); //Retorna um caractere
     }
-  }else if (U == '!'){ //! ou !=
-    fscanf (IN, "%c", &U);
+  } else if (U == '!'){ //! ou !=
+    fscanf (IN1, "%c", &U);
     if (U == '='){
       L[1] = '=';
       i = 2;
     }else {
-      fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+      fseek(IN1, -1, SEEK_CUR); //Retorna um caractere
     }
   }else if (U == '='){ //= ou ==
-    fscanf (IN, "%c", &U);
+    fscanf (IN1, "%c", &U);
     if (U == '='){
       L[1] = '=';
       i = 2;
     }else {
-      fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+      fseek(IN1, -1, SEEK_CUR); //Retorna um caractere
     }
   }
   L[i] = '\0'; //Termina a string
@@ -317,9 +330,9 @@ int checkToken(){
 //Le caracteres ou digitos ate encontrar outra coisa e reconhece o que leu
 int leId(){
   int C = 0, i = 0, F = 0;
-  while ((C == 0 || C == 1) && !feof(IN)){ //Le enquanto forem caracteres ou digitos (assumindo que o primeiro foi caractere)
+  while ((C == 0 || C == 1) && !feof(IN1)){ //Le enquanto forem caracteres ou digitos (assumindo que o primeiro foi caractere)
     L[i] = U;
-    fscanf (IN, "%c", &U);
+    fscanf (IN1, "%c", &U);
     C = QueEso(U); //vide Checker.h
     i++;
     if (i == 255){ //String muito longa
@@ -339,16 +352,16 @@ int leId(){
   } else {
     checaId();
   }
-  fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+  fseek(IN1, -1, SEEK_CUR); //Retorna um caractere
   return C;
 }
 
 //Le numeros decimais e inteiros
 int leNumero(){
   int C = 0, i = 0, F = 0, AN = 0;
-  while ((C == 0 || U == '.') && !feof(IN)){ //Le enquanto forem digitos ou ponto (assumindo que o primeiro foi digito)
+  while ((C == 0 || U == '.') && !feof(IN1)){ //Le enquanto forem digitos ou ponto (assumindo que o primeiro foi digito)
     L[i] = U;
-    fscanf (IN, "%c", &U);
+    fscanf (IN1, "%c", &U);
     if (U == '.' && F == 0){
       F = 1;
     } else if (U == '.' && F == 1){ //Se ler dois pontos
@@ -381,7 +394,7 @@ int leNumero(){
     Ffin = fila_insereint(Ffin, Pla, atoi(L));
     Pla = 0;
   }
-  fseek(IN, -1, SEEK_CUR); //Retorna um caractere
+  fseek(IN1, -1, SEEK_CUR); //Retorna um caractere
   return 0;
 }
 
@@ -418,7 +431,7 @@ void imprimeextenso (int V){
     return;
   }
   if (V == 512){
-    printf("Comando interno ");
+    printf("Comando ");
     return;
   }
   if (V == 768){
@@ -438,15 +451,15 @@ void imprimeextenso (int V){
     return;
   }
   if (V == 1792){
-    printf("Operador Logico ");
+    printf("Op Logico ");
     return;
   }
   if (V == 2048){
-    printf("Operador Aritmetico ");
+    printf("Op Aritm ");
     return;
   }
   if (V == 2304){
-    printf("Operador Relacional ");
+    printf("Op Relac ");
     return;
   }
   if (V == 2560){
@@ -454,11 +467,11 @@ void imprimeextenso (int V){
     return;
   }
   if (V == 2816){
-    printf("Ponto e Virgula ");
+    printf("Del sentenca ");
     return;
   }
   if (V == 3072){
-    printf("Delimitador de Bloco ");
+    printf("Del Bloco ");
     return;
   }
   if (V == 3328){
@@ -481,6 +494,12 @@ TFila* O(TFila* f);
 TFila* R(TFila* f);
 TFila* o(TFila* f);
 TFila* n(TFila* f);
+TFila* _atri(TFila* f);
+TFila* _term(TFila* f);
+TFila* _O(TFila* f);
+TFila* _R(TFila* f);
+TFila* _o(TFila* f);
+TFila* _n(TFila* f);
 TFila* checafprox(TFila* f){
   if (f->prox == NULL){
     Erros(256, Pl);
@@ -870,10 +889,10 @@ TFila* iol(TFila* f){
       fprintf(INM, "\'%s\'\n", f->d.str);
     } else if (Pla == 1024) { //String
       fprintf(INM, "\"");
-      fscanf(OUT, "%c", U);
+      fscanf(OUT0, "%c", U);
       while (U != '\n'){
         fprintf(INM, "%c", U);
-        fscanf(OUT, "%c", U);
+        fscanf(OUT0, "%c", U);
       }
       fprintf(INM, "\"\n");
     } else if (Pla == 1280) { //Inteiro
@@ -957,7 +976,7 @@ TFila* term(TFila* f){
     } else if (Pla == 768){
       pilha = pilha_inserestr(pilha, f->info, f->d.str);
     }
-    f = n(f);
+    f = _n(f);
     f = O(f);
     f = R(f);
     return f;
@@ -973,14 +992,18 @@ TFila* O(TFila* f){
   Pla = (f->info & 3840);
   if ((Pla == 1792) && strcmp(f->d.str, "!") == 0){
     Pla = (pilha->info & 3840);
-    if (Pla == 256){ //Insercoes na pilha de atribuicoes
+    if (Pla == 256 && (VAR[pilha->d.i] & 1) != 0){ //Insercoes na pilha de atribuicoes
       fprintf(INM, "i%i = ! i%i\n", QVAR, pilha->d.i);
+    } else if (Pla == 256 && (VAR[pilha->d.i] & 2) != 0){ //Insercoes na pilha de atribuicoes
+      fprintf(INM, "i%i = ! f%i\n", QVAR, pilha->d.i);
+    } else if (Pla == 256 && (VAR[pilha->d.i] & 4) != 0){ //Insercoes na pilha de atribuicoes
+      fprintf(INM, "i%i = ! c%i\n", QVAR, pilha->d.i);
     } else if (Pla == 1280){
       fprintf(INM, "i%i = ! %i\n", QVAR, pilha->d.i);
     } else if (Pla == 1536 || Pla == 3840){
       Erros(514, Pl);
     } else if (Pla == 768){
-      fprintf(INM, "i%i = ! %s\n", QVAR, pilha->d.str);
+      fprintf(INM, "i%i = ! \'%s\'\n", QVAR, pilha->d.str);
     }
     pilha = pilha_remove(pilha);
     pilha = pilha_insereint(pilha, 256, QVAR);
@@ -1029,6 +1052,7 @@ TFila* R(TFila* f){
 
 TFila* o(TFila* f){
   Pilha* a;
+  int seg;
   if (f == NULL){
     Erros(256, Pl);
   }
@@ -1046,7 +1070,7 @@ TFila* o(TFila* f){
       } else if (Pla == 1536 || Pla == 3840){
         Erros(514, Pl);
       } else if (Pla == 768){
-        fprintf(INM, "i%i = ! %s\n", QVAR, pilha->d.str);
+        fprintf(INM, "i%i = ! \'%s\'\n", QVAR, pilha->d.str);
       }
       pilha = pilha_remove(pilha);
       pilha = pilha_insereint(pilha, 256, QVAR);
@@ -1055,21 +1079,44 @@ TFila* o(TFila* f){
       Pla = (pilha->info & 3840);
       a = pilha->prox;
       QSTR = (a->info & 3840);
-      if (Pla == 256 && QSTR == 256){ //Id Id
-        fprintf(INM, "i%i = i%i %s i%i\n", QVAR, pilha->d.i, f->d.str, );
-      } else if (Pla == 1280){
-        fprintf(INM, "i%i = %i %s\n", QVAR, pilha->d.i, f->d.str);
-      } else if (Pla == 1536){
-        fprintf(INM, "f%i = %f %s\n", QVAR, pilha->d.f, f->d.str);
-        pilha = pilha_remove(pilha);
-        pilha = pilha_insereint(pilha, 3840, QVAR);
-        QVAR++;
-        return checafprox(f);
-      } else if (Pla == 3840){
-        fprintf(INM, "f%i = f%i %s\n", QVAR, pilha->d.i, f->d.str);
-      } else if (Pla == 768){
-        fprintf(INM, "i%i = %s %s\n", QVAR, pilha->d.str, f->d.str);
+      if (Pla == 1536 || Pla == 3840 || (Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || QSTR == 1536 || QSTR == 3840 || (QSTR == 256 && (VAR[a->d.i]) != 0)){ //Coercao para float
+        fprintf(INM, "f%i = ", QVAR);
+        seg = 3840;
+      } else {
+        fprintf(INM, "i%i = ", QVAR);
+        seg = 256;
       }
+      if (Pla == 256 && (VAR[pilha->d.i] & 1) != 0){ //Id int
+        fprintf(INM, "i%i ", pilha->d.i);
+      } else if ((Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || Pla == 3840) { //Id flt
+        fprintf(INM, "f%i ", pilha->d.i);
+      } else if (Pla == 256 && (VAR[pilha->d.i] & 4) != 0) { //Id chr
+        fprintf(INM, "c%i ", pilha->d.i);
+      } else if (Pla == 768) { //chr
+        fprintf(INM, "\'%s\' ", pilha->d.str);
+      } else if (Pla == 1280) { //int
+        fprintf(INM, "%i ", pilha->d.i);
+      } else if (Pla == 1536) { //flt
+        fprintf(INM, "%f ", pilha->d.f);
+      }
+      fprintf(INM, "%s ", f->d.str); //Operador
+      if (Pla == 256 && (VAR[pilha->d.i] & 1) != 0){ //Id int
+        fprintf(INM, "i%i\n", pilha->d.i);
+      } else if ((Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || Pla == 3840) { //Id flt
+        fprintf(INM, "f%i\n", pilha->d.i);
+      } else if (Pla == 256 && (VAR[pilha->d.i] & 4) != 0) { //Id chr
+        fprintf(INM, "c%i\n", pilha->d.i);
+      } else if (Pla == 768) { //chr
+        fprintf(INM, "\'%s\'\n", pilha->d.str);
+      } else if (Pla == 1280) { //int
+        fprintf(INM, "%i\n", pilha->d.i);
+      } else if (Pla == 1536) { //flt
+        fprintf(INM, "%f\n", pilha->d.f);
+      }
+      pilha = pilha_remove(pilha);
+      pilha = pilha_remove(pilha);
+      pilha = pilha_insereint(pilha, seg, QVAR);
+      QVAR++;
     }
     return checafprox(f);
   } else {
@@ -1092,6 +1139,13 @@ TFila* n(TFila* f){
     }
     if ((Pla == 256 && VAR[f->d.i] == 2) || Pla == 1536){ //Uso de float
       fltuse = 1;
+    }
+    if (Pla == 256 ||  Pla == 1280){ //Insercoes na pilha de atribuicoes
+      pilha = pilha_insereint(pilha, f->info, f->d.i);
+    } else if (Pla == 1536){
+      pilha = pilha_insereflt(pilha, f->info, f->d.f);
+    } else if (Pla == 768){
+      pilha = pilha_inserestr(pilha, f->info, f->d.str);
     }
     return checafprox(f);
   } else {
