@@ -180,7 +180,7 @@ int main(int argc, char *argv[]){
   if (!((Ffin->info & 3840) == 3328)){
     Erros(270, Pl);
   }
-  //////////////////////////////////////////////// Fim Analise Semantica
+  //////////////////////////////////////////////// Fim Analise Sintatica
   return 0;
 }
 

@@ -13,6 +13,20 @@ Numero Uni Identificacao (Simbolo(s))
 3072   str Delimitador de bloco ({, }, (, ))
 3328   int Delimitador de fim de arquivo
 
+Id
+Palavra
+Caractere
+String
+Inteiro
+Decimal
+Op Logico
+Op Aritm
+Op Relac
+Atribuicao
+Del sentenca
+Del bloco
+Fim arquivo
+
 Utilizacao do inteiro p->info
 0000 0000 0000 0000 0000 0000 0000 0000
  0    1    2    3    4    5    6    7
@@ -24,3 +38,15 @@ Utilizacao do inteiro p->info
 5- Tipo do que está sendo armazenado (tabela acima)
 6- Acrescimo para posicao atual de linha (+7)
 7- Acrescimo para posicao atual de linha
+
+Utilização do char VAR
+0 0 0 0 0 0 0 0
+0 1 2 3 4 5 6 7
+0- Nada
+1- Nada
+2- Nada
+3- Nada
+4- Variavel ja possui valor atribuido
+5- Char
+6- Float
+7- Inteiro

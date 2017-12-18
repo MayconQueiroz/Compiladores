@@ -1,7 +1,7 @@
 # Compiladores
 Trabalho de Compiladores de 2017
 
-*Juliano Felipe Silva*
+*Juliano Felipe Prass Silva*
 
 *Maycon Queiroz Oliveira*
 

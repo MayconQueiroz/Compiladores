@@ -2,25 +2,21 @@ int a;
 int b; int c;
 chr Grn;
 flt tEste12;
-flt V;
-int z;
 
 scn(a);
 
 #Comentario vai sumir 5s54df65a489@!#$%¨&*#*(@()*&)
 iff (a == 2){
-  tEste12 = 20.625;
+  tEste12 = 20.1254;
   prt("Teste de impressao");
   b = 0;
   whl (b <= 10){
     prt("b=");
     prt(b);
     prt("\n");
-    tEste12 = tEste12 b + a - 50 *;
+    tEste12 = tEste12 b + a / 50 ! *;
     b = b 1 +;
-    z = 0 1 -;
-    a = a 2 >> z +;
-    brk;
+    a = a 2 >>;
   }
   prt ("tEste12=");
   prt (tEste12);
@@ -35,12 +31,11 @@ els {
     prt(Grn);
     prt("\n");
   }
-  Grn = 'k';
+  Grn = '';
 }
 a = 10;
 b = 25;
-c = a b ! & !;
-V = a b + 10.8 +;
+c = a b &;
 iff (c != 0){
   prt("Verdadeiro\n");
 }
