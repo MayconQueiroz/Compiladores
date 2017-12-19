@@ -746,16 +746,16 @@ TFila* rept_stmt(TFila* f){
     f = checafprox(f);
     if (Pla == 3072 && strcmp(f->d.str, "(") == 0){
       f = checafprox(f);
-      f = atri(f);
+      f = atri(f); //Atribuicao inicial
       g = f; //Salvamento temporario do ponteiro para mais tarde
       f = _atri(f); //Atribuicao pra passar
-      fprintf(INM, "iff ");
-      f = lexp(f);
       Ind = LGEN;
-      LGEN += 2;
+      LGEN += 3;
+      fprintf(INM, ":L%i\niff ", Ind);
+      f = lexp(f);
       Tem = RSTMTC;
       RSTMTC = Ind + 1;
-      fprintf(INM, "gto L%i\ngto L%i\n:L%i\n", Ind, Ind+1, Ind);
+      fprintf(INM, "gto L%i\ngto L%i\n:L%i\n", Ind+1, Ind+2, Ind+1);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, ")") == 0){
         f = checafprox(f);
         if (Pla == 3072 && strcmp(f->d.str, "{") == 0){
@@ -763,7 +763,7 @@ TFila* rept_stmt(TFila* f){
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
             g = atri(g);
-            fprintf(INM, "gto L%i\n:L%i\n", Ind, Ind+1);
+            fprintf(INM, "gto L%i\n:L%i\n", Ind, Ind+2);
             f = checafprox(f); //TODO Tratar fim de arquivo
             RSTMTC = Tem;
             return f;
@@ -944,13 +944,14 @@ TFila* atri(TFila* f){
       f = checafprox(f);
       f = term(f);
       if (VAR[g->d.i] & 1){ //Id
-        fprintf(INM, "i%i = i%i\n", g->d.i, QVAR);
+        fprintf(INM, "i%i = i%i", g->d.i, QVAR-1);
       } else if (VAR[g->d.i] & 2){
-        fprintf(INM, "f%i = f%i\n", g->d.i, QVAR);
+        fprintf(INM, "f%i = f%i", g->d.i, QVAR-1);
       } else if (VAR[g->d.i] & 4){
-        fprintf(INM, "c%i = i%i\n", g->d.i, QVAR);
+        fprintf(INM, "c%i = i%i", g->d.i, QVAR-1);
       }
       if ((f->info & 3840) == 2816){ //;
+
         f = checafprox(f);
         if (urel != 0 && fltuse != 0){ //Float problem
           Erros(514, Pl-1);
@@ -972,7 +973,12 @@ TFila* atri(TFila* f){
 }
 
 TFila* term(TFila* f){
+  TFila* g;
   if (f == NULL){
+    Erros(256, Pl);
+  }
+  g = f->prox;
+  if (g == NULL || g->info == 3328){
     Erros(256, Pl);
   }
   Pla = (f->info & 3840);
@@ -992,7 +998,11 @@ TFila* term(TFila* f){
     } else if (Pla == 768){
       pilha = pilha_inserestr(pilha, f->info, f->d.str);
     }
-    f = _n(f);
+    if (g->info == 2816){
+      f = n(f);
+    } else{
+      f = _n(f);
+    }
     f = O(f);
     f = R(f);
     return f;

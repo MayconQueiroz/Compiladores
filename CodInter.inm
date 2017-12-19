@@ -7,9 +7,9 @@ scn i0
 iff i0 == 2 gto L0
 gto L1
 :L0
-f4 = f5
+f4 = 20.125401 
 prt "Teste de impressao"
-i1 = i5
+i1 = 0 
 :L2
 iff i1 <= 10 gto L3
 gto L4
@@ -17,43 +17,44 @@ gto L4
 prt "b="
 prt i1
 prt "\n"
-f5 = i1 + i1
+f4 = f5 = i1 + i1
 f6 = i0 / i0
 i7 = ! 50
-f8 = * f4 = f9
-f9 = 1 + 1
-i1 = i10
-f10 = 2 ! 2
-i0 = i11
+f8 = * 
+i1 = f9 = 1 + 1
+
+i0 = f10 = 2 ! 2
+
 gto L2
 :L4
 prt "tEste12="
 prt f4
 prt "\n"
-+++gto L2
+gto L2
 :L1
-i2 = i11
-iff i2 < 20 gto L5
-gto L6
+i2 = 0 
 :L5
+iff i2 < 20 gto L6
+gto L7
+:L6
 scn c3
 prt "Grn="
 prt c3
 prt "\n"
-f11 = 1 + 1
-i2 = i12
+i2 = f11 = 1 + 1
+
 gto L5
-:L6
-c3 = i12
-...:L2
-i0 = i12
-i1 = i12
-f12 = i1 ! i1
-i2 = i13
-iff i2 != 0 gto L7
-gto L8
 :L7
-prt "Verdadeiro\n"
-+++gto L9
+c3 = 'c' 
+:L2
+i0 = 10 
+i1 = 25 
+i2 = f12 = i1 ! i1
+
+iff i2 != 0 gto L8
+gto L9
 :L8
+prt "Verdadeiro\n"
+gto L10
 :L9
+:L10
