@@ -28,8 +28,8 @@ Pilha* pilha_insereint(Pilha* pilha, int val, int V){
   novo->info = val; //Atribui a novo, o valor passado
   novo->d.i = V;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
-  printf("Insereint\n");
-  pilha_imprime(pilha);
+  /*printf("Insereint\n");
+  pilha_imprime(pilha);*/
   return novo;
 }
 
@@ -38,8 +38,8 @@ Pilha* pilha_insereflt(Pilha* pilha, int val, float V){
   novo->info = val; //Atribui a novo, o valor passado
   novo->d.f = V;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
-  printf("Insereflt\n");
-  pilha_imprime(pilha);
+  /*printf("Insereflt\n");
+  pilha_imprime(pilha);*/
   return novo;
 }
 
@@ -48,8 +48,8 @@ Pilha* pilha_inserestr(Pilha* pilha, int val, char* V){
   novo->info = val; //Atribui a novo, o valor passado
   strcpy(novo->d.str, V);
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
-  printf("Inserestr\n");
-  pilha_imprime(pilha);
+  /*printf("Inserestr\n");
+  pilha_imprime(pilha);*/
   return novo;
 }
 
@@ -130,6 +130,7 @@ void pilha_imprime (Pilha* pilha){ //Varre e imprime
   for (p = pilha; p != NULL; p = p->prox){
     imprimetipop(p->info);
     Ax = p->info & 3840;
+    printf("\t%i\t", Ax);
     if (Ax == 256 || Ax == 1024 || Ax == 1280 || Ax == 3584 || Ax == 3840){
       printf("%i\n", p->d.i);
     } else if (Ax == 1536){
@@ -151,8 +152,8 @@ Pilha* pilha_remove (Pilha* pilha){ //Remove a primeira posicao
   q = pilha;
   pilha = q->prox;
   free(q);
-  printf("remove\n");
-  pilha_imprime(pilha);
+  /*printf("remove\n");
+  pilha_imprime(pilha);*/
   return pilha;
 }
 

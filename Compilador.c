@@ -199,9 +199,6 @@ int main(int argc, char *argv[]){
   }
 
   Ffin = fila_insereint(Ffin, 3328, 0);
-  if (deb == 1){
-    fila_imprime(Fini); //Impressao da fila (para debug)
-  }
 
   //////////////////////////////////////////////// Fim Analise Lexica
   //Variaveis que podem ser aproveitadas:
@@ -222,12 +219,6 @@ int main(int argc, char *argv[]){
   Pl = Pl + (Fini->info & 255);
   //Alocacao do vetor de Variaveis
   VAR = (char *) calloc(QVAR, sizeof(char));
-  if (deb == 1){
-    for (i = 0; i < QVARold; i++) {
-      printf("VAR[%i] = %u. ", i, VAR[i]);
-    }
-    printf("\n");
-  }
 
   Ffin = stmt(Fini); //Regras da gramatica
 
@@ -1089,7 +1080,7 @@ TFila* o(TFila* f){
     if (Pla == 1792 || (Pla == 2048 && strcmp(f->d.str, "%") == 0)){
       urel = 1;
     }
-    if (Pla == 1792 && strcpy(f->d.str, "!") == 0){
+    if (Pla == 1792 && strcmp(f->d.str, "!") == 0){
       Pla = (pilha->info & 3840);
       if (Pla == 256){ //Insercoes na pilha de atribuicoes
         fprintf(INM, "i%i = ! i%i\n", QVAR, pilha->d.i);
@@ -1103,6 +1094,7 @@ TFila* o(TFila* f){
       pilha = pilha_remove(pilha);
       pilha = pilha_insereint(pilha, 256, QVAR);
       QVAR++;
+      urel = 1;
     } else { ///////////////////////////////////////////////Reducao da pilha
       Pla = (pilha->info & 3840);
       a = pilha->prox;
@@ -1118,6 +1110,7 @@ TFila* o(TFila* f){
         fprintf(INM, "i%i ", pilha->d.i);
       } else if ((Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || Pla == 3840) { //Id flt
         fprintf(INM, "f%i ", pilha->d.i);
+        fltuse = 1;
       } else if (Pla == 256 && (VAR[pilha->d.i] & 4) != 0) { //Id chr
         fprintf(INM, "c%i ", pilha->d.i);
       } else if (Pla == 768) { //chr
@@ -1126,13 +1119,16 @@ TFila* o(TFila* f){
         fprintf(INM, "%i ", pilha->d.i);
       } else if (Pla == 1536) { //flt
         fprintf(INM, "%f ", pilha->d.f);
+        fltuse = 1;
       }
       fprintf(INM, "%s ", f->d.str); //Operador
       pilha = pilha_remove(pilha);
+      Pla = (pilha->info & 3840);
       if (Pla == 256 && (VAR[pilha->d.i] & 1) != 0){ //Id int
         fprintf(INM, "i%i\n", pilha->d.i);
       } else if ((Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || Pla == 3840) { //Id flt
         fprintf(INM, "f%i\n", pilha->d.i);
+        fltuse = 1;
       } else if (Pla == 256 && (VAR[pilha->d.i] & 4) != 0) { //Id chr
         fprintf(INM, "c%i\n", pilha->d.i);
       } else if (Pla == 768) { //chr
@@ -1141,6 +1137,7 @@ TFila* o(TFila* f){
         fprintf(INM, "%i\n", pilha->d.i);
       } else if (Pla == 1536) { //flt
         fprintf(INM, "%f\n", pilha->d.f);
+        fltuse = 1;
       }
       pilha = pilha_remove(pilha);
       pilha = pilha_insereint(pilha, seg, QVAR);

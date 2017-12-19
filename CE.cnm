@@ -14,9 +14,9 @@ iff (a == 2){
     prt("b=");
     prt(b);
     prt("\n");
-    tEste12 = tEste12 b + a / 50 ! *;
+    tEste12 = tEste12 b + a / 50 *;
     b = b 1 +;
-    a = a 2 >>;
+    a = 2 a >>;
   }
   prt ("tEste12=");
   prt (tEste12);

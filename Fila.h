@@ -91,7 +91,7 @@ void imprimetipo (int V){
     return;
   }
   if (V == 1024){
-    printf("String ");
+    printf("String \t");
     return;
   }
   if (V == 1280){
@@ -152,7 +152,7 @@ void fila_imprime (TFila* fila){ //Varre e imprime
     Lin = Lin + (p->info & 255);
     imprimetipo(p->info);
     Ax = p->info & 3840;
-    printf("%i\t", Lin);
+    printf("\t%i\t", Lin);
     if (Ax == 256 || Ax == 1024 || Ax == 1280 || Ax == 3328){
       printf("%i\n", p->d.i);
     } else if (Ax == 1536){

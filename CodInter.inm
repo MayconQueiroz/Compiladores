@@ -1,5 +1,61 @@
-f1 = 12 + 1093140480
-f2 = 4 / 1
-i3 = ! 50
-f4 = * i2
-f0 = f4
+scn i0
+iff i0 == 2 gto L0
+gto L1
+:L0
+f5 = 20.125401 
+f4 = f5
+prt "Teste de impressao"
+i6 = 0 
+i1 = i6
+:L2
+iff i1 <= 10 gto L3
+gto L4
+:L3
+prt "b="
+prt i1
+prt "\n"
+f7 = i1 + f4
+f8 = i0 / f7
+f9 = 50 * f8
+f4 = f9
+i10 = 1 + i1
+i1 = i10
+i11 = i0 >> 2
+i0 = i11
+gto L2
+:L4
+prt "tEste12="
+prt f4
+prt "\n"
+gto L2
+:L1
+i12 = 0 
+i2 = i12
+:L5
+iff i2 < 20 gto L6
+gto L7
+:L6
+scn c3
+prt "Grn="
+prt c3
+prt "\n"
+i13 = 1 + i2
+i2 = i13
+gto L5
+:L7
+i14 = 'c' 
+c3 = i14
+:L2
+i15 = 10 
+i0 = i15
+i16 = 25 
+i1 = i16
+i17 = i1 & i0
+i2 = i17
+iff i2 != 0 gto L8
+gto L9
+:L8
+prt "Verdadeiro\n"
+gto L10
+:L9
+:L10
