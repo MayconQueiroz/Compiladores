@@ -184,7 +184,8 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       exit(-1);
     }
     if (V == 516){
-      printf("Variavel nao inicializada - Linha %i", L);
+      printf("Variavel nao inicializada - Linha %i\n", L);
+      return 0;
     }
     /*if (V == 51){
       printf(" - Linha %i", L);

@@ -593,15 +593,12 @@ TFila* mstmt(TFila* f){
 TFila* decl_stmt(TFila* f){
   char A = 0;
   if (strcmp(f->d.str, "int") == 0){
-    fprintf(INM, "i");
     f = checafprox(f);
     A = 1;
   } else if (strcmp(f->d.str, "flt") == 0){
-    fprintf(INM, "f");
     f = checafprox(f);
     A = 2;
   } else if (strcmp(f->d.str, "chr") == 0){
-    fprintf(INM, "c");
     f = checafprox(f);
     A = 4;
   } else {
@@ -613,7 +610,6 @@ TFila* decl_stmt(TFila* f){
   } else {
     Erros(259, Pl);
   }
-  fprintf(INM, "%i\n", f->d.i);
   f = checafprox(f);
   if (Pla == 2816){ //;
     f = checafprox(f);
@@ -944,14 +940,13 @@ TFila* atri(TFila* f){
       f = checafprox(f);
       f = term(f);
       if (VAR[g->d.i] & 1){ //Id
-        fprintf(INM, "i%i = i%i", g->d.i, QVAR-1);
+        fprintf(INM, "i%i = i%i\n", g->d.i, QVAR-1);
       } else if (VAR[g->d.i] & 2){
-        fprintf(INM, "f%i = f%i", g->d.i, QVAR-1);
+        fprintf(INM, "f%i = f%i\n", g->d.i, QVAR-1);
       } else if (VAR[g->d.i] & 4){
-        fprintf(INM, "c%i = i%i", g->d.i, QVAR-1);
+        fprintf(INM, "c%i = i%i\n", g->d.i, QVAR-1);
       }
       if ((f->info & 3840) == 2816){ //;
-
         f = checafprox(f);
         if (urel != 0 && fltuse != 0){ //Float problem
           Erros(514, Pl-1);
@@ -999,7 +994,14 @@ TFila* term(TFila* f){
       pilha = pilha_inserestr(pilha, f->info, f->d.str);
     }
     if (g->info == 2816){
+      if (fltuse != 0){
+        fprintf(INM, "f%i = ", QVAR);
+      } else{
+        fprintf(INM, "i%i = ", QVAR);
+      }
+      QVAR++;
       f = n(f);
+      fprintf(INM, "\n");
     } else{
       f = _n(f);
     }
@@ -1105,7 +1107,7 @@ TFila* o(TFila* f){
       Pla = (pilha->info & 3840);
       a = pilha->prox;
       QSTR = (a->info & 3840);
-      if (Pla == 1536 || Pla == 3840 || (Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || QSTR == 1536 || QSTR == 3840 || (QSTR == 256 && (VAR[a->d.i]) != 0)){ //Coercao para float
+      if (Pla == 1536 || Pla == 3840 || (Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || QSTR == 1536 || QSTR == 3840 || (QSTR == 256 && (VAR[a->d.i] & 2) != 0)){ //Coercao para float
         fprintf(INM, "f%i = ", QVAR);
         seg = 3840;
       } else {
@@ -1126,6 +1128,7 @@ TFila* o(TFila* f){
         fprintf(INM, "%f ", pilha->d.f);
       }
       fprintf(INM, "%s ", f->d.str); //Operador
+      pilha = pilha_remove(pilha);
       if (Pla == 256 && (VAR[pilha->d.i] & 1) != 0){ //Id int
         fprintf(INM, "i%i\n", pilha->d.i);
       } else if ((Pla == 256 && (VAR[pilha->d.i] & 2) != 0) || Pla == 3840) { //Id flt
@@ -1139,7 +1142,6 @@ TFila* o(TFila* f){
       } else if (Pla == 1536) { //flt
         fprintf(INM, "%f\n", pilha->d.f);
       }
-      pilha = pilha_remove(pilha);
       pilha = pilha_remove(pilha);
       pilha = pilha_insereint(pilha, seg, QVAR);
       QVAR++;

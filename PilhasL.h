@@ -21,11 +21,15 @@ struct Pilha{
   Pilha* prox;
 };
 
+void pilha_imprime (Pilha* pilha);
+
 Pilha* pilha_insereint(Pilha* pilha, int val, int V){
   Pilha* novo = (Pilha*) malloc(sizeof(Pilha)); //Reserva um espaco para novo
   novo->info = val; //Atribui a novo, o valor passado
   novo->d.i = V;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
+  printf("Insereint\n");
+  pilha_imprime(pilha);
   return novo;
 }
 
@@ -34,6 +38,8 @@ Pilha* pilha_insereflt(Pilha* pilha, int val, float V){
   novo->info = val; //Atribui a novo, o valor passado
   novo->d.f = V;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
+  printf("Insereflt\n");
+  pilha_imprime(pilha);
   return novo;
 }
 
@@ -42,6 +48,8 @@ Pilha* pilha_inserestr(Pilha* pilha, int val, char* V){
   novo->info = val; //Atribui a novo, o valor passado
   strcpy(novo->d.str, V);
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
+  printf("Inserestr\n");
+  pilha_imprime(pilha);
   return novo;
 }
 
@@ -49,26 +57,102 @@ Pilha* pilha_cria(){ //Retorna Null, criacao de pilhas
   return NULL;
 }
 
-/*void pilha_imprime (Pilha* pilha){ //Varre e imprime
+void imprimetipop (int V){
+  V = V & 3840;
+  if (V == 256){
+    printf("Variavel ");
+    return;
+  }
+  if (V == 512){
+    printf("Comando ");
+    return;
+  }
+  if (V == 768){
+    printf("Caractere ");
+    return;
+  }
+  if (V == 1024){
+    printf("String ");
+    return;
+  }
+  if (V == 1280){
+    printf("Inteiro ");
+    return;
+  }
+  if (V == 1536){
+    printf("Decimal ");
+    return;
+  }
+  if (V == 1792){
+    printf("Op Logico ");
+    return;
+  }
+  if (V == 2048){
+    printf("Op Aritm ");
+    return;
+  }
+  if (V == 2304){
+    printf("Op Relac ");
+    return;
+  }
+  if (V == 2560){
+    printf("Atribuicao ");
+    return;
+  }
+  if (V == 2816){
+    printf("Del sentenca ");
+    return;
+  }
+  if (V == 3072){
+    printf("Del Bloco ");
+    return;
+  }
+  if (V == 3328){
+    printf("Fim Arquivo ");
+    return;
+  }
+  if (V == 3584){
+    printf("Id int Temp ");
+    return;
+  }
+  if (V == 3840){
+    printf("Id flt Temp ");
+    return;
+  }
+}
+
+void pilha_imprime (Pilha* pilha){ //Varre e imprime
   Pilha* p;
+  int Ax;
   if (pilha == NULL){
     printf("Pilha Vazia\n");
   }
   for (p = pilha; p != NULL; p = p->prox){
-    printf("Valor = %i\n",p->info);
+    imprimetipop(p->info);
+    Ax = p->info & 3840;
+    if (Ax == 256 || Ax == 1024 || Ax == 1280 || Ax == 3584 || Ax == 3840){
+      printf("%i\n", p->d.i);
+    } else if (Ax == 1536){
+      printf("%f\n", p->d.f);
+    } else{
+      printf("%s\n", p->d.str);
+    }
   }
-}*/
+  printf("*******************************************\n");
+}
 
 Pilha* pilha_remove (Pilha* pilha){ //Remove a primeira posicao
   Pilha* p;
   Pilha* q;
   if (pilha == NULL){
-    printf("Pilha vazia\n");
+    //printf("Pilha vazia\n");
     return NULL;
   }
   q = pilha;
   pilha = q->prox;
   free(q);
+  printf("remove\n");
+  pilha_imprime(pilha);
   return pilha;
 }
 
