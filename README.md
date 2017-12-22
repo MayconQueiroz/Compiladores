@@ -15,3 +15,5 @@ Compilador [opções] entrada
     -h  Mostra ajuda
   entrada: Arquivo de entrada .cnm a ser processado (extensão requerida)
 ```
+### Especificação da linguagem
+https://drive.google.com/open?id=13CgnjVUK8MUsZ_YhuPyFDufCqRssMv50
