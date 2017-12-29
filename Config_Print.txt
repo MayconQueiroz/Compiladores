@@ -1,0 +1,76 @@
+Se tiver impressão do léxico usar
+:Lex
+Caractere atual
+Numero da Linha
+Construção atual
+Regra com um caractere
+Terminar com ::
+Exemplo:
+:Lex
+i
+1
+i
+i (id por exemplo)
+::
+n
+1
+in
+i
+::
+t
+1
+int
+i
+::
+
+Se tiver a impressão do Sintático usar
+:Sin
+5 proximos elementos da fila separados por quebra de Linha
+Número da Linha
+Regra usada
+VAR
+Terminar com ::
+Exemplo:
+:Sin
+int
+0
+;
+int
+1
+1
+<stmt> -> <decl_stmt> <mstmt>
+0
+0
+0
+0
+0
+0
+0
+0
+0
+::
+0
+;
+int
+1
+;
+1
+<decl_stmt> -> int id ;
+0
+0
+0
+0
+0
+0
+0
+0
+0
+
+Se tiver erros usar
+:Erro
+Código do erro
+Linha do erro
+Exemplo:
+:Erro
+10
+1
