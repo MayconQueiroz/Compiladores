@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 /*
-Erros retornam  1 se forem erros operacionais
-      retornam -1 se forem erros de escrita de codigo
+Erros retornam 1 se forem erros operacionais
+              -1 se forem erros de escrita de codigo
 */
 
 int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. L = Linha do erro
@@ -49,6 +49,11 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf ("Falha ao reabrir arquivo de strings\n");
       return 1;
     }
+    //6 ~ 20 Reservados para erros envolvendo abertura de Arquivos
+    if (V == 21){
+      printf("Nao foi possivel alocar vetor auxiliar\n");
+      return 1;
+    }
   }
   //128 ~ 255 Erros Lexicos
   if (V >= 128 && V <= 255){
@@ -80,7 +85,11 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf ("Numero nao representavel - Linha %i\n", L);
       return -1;
     }
-    //135 ~ 139 Reservados para erros envolvendo reconhecimento de numeros
+    if (V == 135){
+      printf ("Houve um erro na chamada da funcao de verificacao de numeros\n");
+      return 1;
+    }
+    //136 ~ 139 Reservados para erros envolvendo reconhecimento de numeros
     if (V == 140){
       printf ("Caractere invalido - Linha %i\n", L);
       return -1;
@@ -109,83 +118,86 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       exit(-1);
     }
     if (V == 259){
-      printf("Id esperado - Linha %i", L);
+      printf("Id esperado - Linha %i\n", L);
       exit(-1);
     }
     if (V == 260){
-      printf("Delimitador de sentenca esperado (;) - Linha %i", L);
+      printf("Delimitador de sentenca esperado (;) - Linha %i\n", L);
       exit(-1);
     }
     if (V == 261){
-      printf("Operador relacional esperado - Linha %i", L);
+      printf("Operador relacional esperado - Linha %i\n", L);
       exit(-1);
     }
     if (V == 262){
-      printf("Parenteses esquerdo esperado (() - Linha %i", L);
+      printf("Parenteses esquerdo esperado (() - Linha %i\n", L);
       exit(-1);
     }
     if (V == 263){
-      printf("Parenteses direito esperado ()) - Linha %i", L);
+      printf("Parenteses direito esperado ()) - Linha %i\n", L);
       exit(-1);
     }
     if (V == 264){
-      printf("Chave esquerda esperada ({) - Linha %i", L);
+      printf("Chave esquerda esperada ({) - Linha %i\n", L);
       exit(-1);
     }
     if (V == 265){
-      printf("Chave direita esperada (}) - Linha %i", L);
+      printf("Chave direita esperada (}) - Linha %i\n", L);
       exit(-1);
     }
     if (V == 266){
-      printf("Esperado els ou inicio de expressao - Linha %i", L);
+      printf("Esperado els ou inicio de expressao - Linha %i\n", L);
       exit(-1);
     }
     if (V == 267){
-      printf("Valor de impressao invalido - Linha %i", L);
+      printf("Valor de impressao invalido - Linha %i\n", L);
       exit(-1);
     }
     if (V == 268){
-      printf("Sinal de igualdade esperado para atribuicao - Linha %i", L);
+      printf("Sinal de igualdade esperado para atribuicao - Linha %i\n", L);
       exit(-1);
     }
     if (V == 269){
-      printf("Construcao incorreta da atribuicao - Linha %i", L);
+      printf("Construcao incorreta da atribuicao - Linha %i\n", L);
       exit(-1);
     }
     if (V == 270){
-      printf("Algo deu errado na analise sintatica - Linha %i", L);
+      printf("Algo deu errado na analise sintatica - Linha %i\n", L);
       exit(-1);
     }
     if (V == 271){
-      printf("Arquivo Vazio");
+      printf("Arquivo Vazio\n");
+      exit(-1);
+    }
+    if (V == 272){
+      printf("Fila com provavelmente apenas um elemento\n");
       exit(-1);
     }
     /*if (V == 27){
       printf(" - Linha %i", L);
-      exit(1);
+      exit(-1);
     }*/
   }
-  //512 ~ 768 Erros Sintaticos e de geracao de codigo intermediario
+  //512 ~ 768 Erros Semanticos e de geracao de codigo intermediario
   if (V >= 512 && V <= 768){
     if (V == 512){
-      printf("Variavel nao declarada - Linha %i", L);
+      printf("Variavel nao declarada - Linha %i\n", L);
       exit(-1);
     }
     if (V == 513){
-      printf("brk fora de um laco de repeticao - Linha %i", L);
+      printf("brk fora de um laco de repeticao - Linha %i\n", L);
       exit(-1);
     }
     if (V == 514){
-      printf("Nao permitido uso do operador com float - Linha %i", L);
+      printf("Nao permitido uso do operador com float - Linha %i\n", L);
       exit(-1);
     }
     if (V == 515){
-      printf("Atribuicao a int de operacoes sobre flt - Linha %i", L);
+      printf("Atribuicao a int de operacoes sobre flt - Linha %i\n", L);
       exit(-1);
     }
     if (V == 516){
       printf("Variavel nao inicializada - Linha %i\n", L);
-      return 0;
     }
     /*if (V == 51){
       printf(" - Linha %i", L);
@@ -198,6 +210,13 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
     return -1;
   }
   */
+  //769 ~ 1024 Erros do Compilador Debugger
+  if (V >= 769 && V <= 1024){
+    if (V == 769){
+      printf (" - Linha %i\n", L);
+      return -1;
+    }
+  }
   printf ("Problemas com processamento de erros\n");
   exit(1);
 }

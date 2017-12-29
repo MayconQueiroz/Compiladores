@@ -3,7 +3,8 @@
 #include <string.h>
 
 /*
-Verifica tipos das coisas, nada mais por enquanto
+Verifica tipos das coisas, se numeros sao representaveis
+  e se o caractere e imprimivel
 */
 
 //0 - Numero. 1 - Letra. 2 - Simbolo. 3 - Invalido

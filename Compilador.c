@@ -10,7 +10,9 @@
 #include "PilhasL.h"
 
 /**
-* Recebe codigo.cnm
+* Compilador da linguagem NOME, recebe por entrada codigo.cnm
+* e provoca por saida auxiliar.snm - Strings do arquivo .cnm
+                      CodInter.inm - Codigo de tres enderecos intermediario
 */
 
 FILE *IN1; //Arquivo de entrada
@@ -50,6 +52,7 @@ TFila* stmt(TFila* f);
 int main(int argc, char *argv[]){
   int I, R, h = 0, i;
   if (argc == 2 || argc == 3){
+    //Verifica chamada de opcoes
     for (i = 1; i < argc; i++) {
       if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "/h") == 0 || strcmp(argv[i], "/H") == 0 || strcmp(argv[i], "-H") == 0  || strcmp(argv[i], "/?") == 0) {
         return Erros(1, 0);
@@ -197,6 +200,9 @@ int main(int argc, char *argv[]){
   if (Fini == NULL){ //Nao compila arquivos vazios
     Erros(271, Pl);
   }
+  if (Fini == Ffin){ //Alguma coisa aconteceu com a fila, mas nao tem nenhuma producao com um token so
+    Erros(272, 0);
+  }
 
   Ffin = fila_insereint(Ffin, 3328, 0);
 
@@ -219,6 +225,9 @@ int main(int argc, char *argv[]){
   Pl = Pl + (Fini->info & 255);
   //Alocacao do vetor de Variaveis
   VAR = (char *) calloc(QVAR, sizeof(char));
+  if (VAR == NULL){ //Falha de alocacao
+    return Erros(21, 0);
+  }
 
   Ffin = stmt(Fini); //Regras da gramatica
 
@@ -228,11 +237,11 @@ int main(int argc, char *argv[]){
     }
     printf("\n");
   }
-  if (!((Ffin->info & 3840) == 3328)){
+  if (!((Ffin->info & 3840) == 3328)){ //Fim da fila em momento inesperado
     Erros(256, Pl);
   }
   //////////////////////////////////////////////// Fim Analise Sintatica e Semantica
-
+  apagaTudo();
   return 0;
 }
 
@@ -331,6 +340,9 @@ int leId(){
       return 4;
     }
   }
+  if (C == 3){ //Caractere Invalido
+    return 3;
+  }
   L[i] = '\0'; //Termina a string
   if (i == 3){
     F = checkToken(); //Verifica se e uma das palavras reservadas da linguagem
@@ -365,22 +377,30 @@ int leNumero(){
       return 1;
     }
   }
+  if (C == 3){ //Caractere Invalido
+    Erros(140, Pl);
+    exit(-1);
+  }
   L[i] = '\0'; //Termina numero
   if (F == 1){ //Decimal
     if (L[i-1] == '.'){ //Sem numeros apos o ponto
       return 3;
     }
     C = NumeroCorecto(L, 0);
-    if (C == 1){
+    if (C == 1){ //Numero nao representavel
       return 4;
+    } else if (C == 2){ //Bug na chamada
+      return 5;
     }
     Pla = (Pla & 255) + 1536;
     Ffin = fila_insereflt(Ffin, Pla, atof(L));
     Pla = 0;
   } else { //Inteiro
     C = NumeroCorecto(L, 1);
-    if (C == 1){
+    if (C == 1){ //Numero nao representavel
       return 4;
+    } else if (C == 2){ //Bug na chamada
+      return 5;
     }
     Pla = (Pla & 255) + 1280;
     Ffin = fila_insereint(Ffin, Pla, atoi(L));
@@ -480,6 +500,7 @@ void imprimeextenso (int V){
   }
 }
 
+//Declaracao das Funcoes
 TFila* mstmt(TFila* f);
 TFila* decl_stmt(TFila* f);
 TFila* lexp(TFila* f);
@@ -494,6 +515,7 @@ TFila* O(TFila* f);
 TFila* R(TFila* f);
 TFila* o(TFila* f);
 TFila* n(TFila* f);
+//Funcoes sem impressao
 TFila* _atri(TFila* f);
 TFila* _term(TFila* f);
 TFila* _O(TFila* f);
@@ -706,7 +728,7 @@ TFila* c(TFila* f, int LGENIF){
       f = checafprox(f);
       f = stmt(f);
       if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-        f = checafprox(f); //TODO tratar fim de arquivo
+        f = checafprox(f);
         fprintf(INM, ":L%i\n", LGENIF);
         return f;
       } else {
@@ -749,9 +771,9 @@ TFila* rept_stmt(TFila* f){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-            g = atri(g);
+            g = atri(g); //Impressao da atribuicao de passagem
             fprintf(INM, "gto L%i\n:L%i\n", Ind, Ind+2);
-            f = checafprox(f); //TODO Tratar fim de arquivo
+            f = checafprox(f);
             RSTMTC = Tem;
             return f;
           } else {
@@ -783,7 +805,7 @@ TFila* rept_stmt(TFila* f){
           f = checafprox(f);
           f = stmt(f);
           if ((f->info & 3840) == 3072 && strcmp(f->d.str, "}") == 0){
-            f = checafprox(f); //TODO Tratar fim de arquivo
+            f = checafprox(f);
             fprintf(INM, "gto L%i\n:L%i\n", Ind, Ind+2);
             RSTMTC = Tem;
             return f;
