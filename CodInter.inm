@@ -1,19 +1,10 @@
-scn i0
-iff i0 == 2 gto L0
-gto L1
+i0[10]
+i1[1]
+i2
+i2i3 = 0 
+i2 = i3
 :L0
-f5 = 20.125401 
-f4 = f5
-prt "Teste de impressao"
-i6 = 0 
-i1 = i6
-:L2
-iff i1 <= 10 gto L3
-gto L4
-:L3
-prt "b="
-prt i1
-prt "\n"
-f7 = i1 + f4
-i8 = ! i0
-i9 = 50 * 
+iff i2 < 10 gto L1
+gto L2
+:L1
+i1[i2]

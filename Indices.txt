@@ -10,7 +10,7 @@ Numero Uni Identificacao (Simbolo(s))
 2304   str Operador Relacional (==, !=, <=, >=, <, >)
 2560   str Atribuicao (=)
 2816   str Delimitador de sentenca (;)
-3072   str Delimitador de bloco ({, }, (, ))
+3072   str Delimitador de bloco ({, }, (, ), [, ])
 3328   int Delimitador de fim de arquivo
 3584   int Id int nao tabelado
 3840   int Id flt nao tabelado
@@ -33,8 +33,11 @@ Utilização do char VAR
 0- Nada
 1- Nada
 2- Nada
-3- Nada
+3- Variavel e vetor
 4- Variavel ja possui valor atribuido
 5- Char
 6- Float
 7- Inteiro
+
+Indicacao de tipo Esperado
+*A fazer

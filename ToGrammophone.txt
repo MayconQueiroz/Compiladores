@@ -5,24 +5,34 @@
 <stmt> -> <io_stmt> <mstmt>.
 <mstmt> -> <stmt>.
 <mstmt> -> .
-<decl_stmt> -> chr id ;.
-<decl_stmt> -> int id ;.
-<decl_stmt> -> flt id ;.
-<lexp> -> id or <n>.
+<decl_stmt> -> chr id <d> ;.
+<decl_stmt> -> int id <d> ;.
+<decl_stmt> -> flt id <d> ;.
+<d> -> .
+<d> -> [ ni ] .
+<vetor> -> [ <index> ].
+<vetor> -> .
+<index> -> ni.
+<index> -> ch.
+<index> -> id.
+<lexp> -> id <d> or <n>.
 <cond_stmt> -> iff ( <lexp> ) { <stmt> } <c>.
 <cond_stmt> -> brk ;.
 <c> -> els { <stmt> }.
 <c> -> .
-<rept_stmt> -> for ( <atri> ; <lexp> ; <atri> ) { <stmt> }.
+<rept_stmt> -> for ( <atri> ; <atri> ; <lexp> ) { <stmt> }.
 <rept_stmt> -> whl ( <lexp> ) { <stmt> }.
-<io_stmt> -> scn ( id ) ;.
-<io_stmt> -> prt ( <io> ) ;.
+<io_stmt> -> fsc id <vetor> ;.
+<io_stmt> -> fpr <io> ;.
+<io_stmt> -> fop str ch ;.
+<io_stmt> -> scn id <vetor> ;.
+<io_stmt> -> prt <io> ;.
 <io> -> str.
 <io> -> ni.
 <io> -> nd.
 <io> -> ch.
-<io> -> id.
-<atri> -> id = <term> ;.
+<io> -> id <vetor>.
+<atri> -> id <vetor> = <term> ;.
 <term> -> <n> <O> <R>.
 <O> -> !.
 <O> -> .
@@ -33,4 +43,4 @@
 <n> -> ni.
 <n> -> nd.
 <n> -> ch.
-<n> -> id.
+<n> -> id <vetor>.

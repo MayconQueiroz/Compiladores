@@ -186,7 +186,7 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       exit(-1);
     }
     if (V == 275){
-      printf("Numero inteiro esperado para tamanho ou posicao do vetor - Linha %i", L);
+      printf("Numero inteiro esperado para tamanho do vetor - Linha %i", L);
       exit(-1);
     }
     if (V == 276){
@@ -216,7 +216,7 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf("Atribuicao a int de operacoes sobre flt - Linha %i\n", L);
       exit(-1);
     }
-    if (V == 516){ //Nao usado, mas reservado
+    if (V == 516){
       printf("Variavel nao inicializada - Linha %i\n", L);
     }
     if (V == 517){
@@ -251,22 +251,24 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf("Variavel declarada como vetor deve ser acessada como vetor - Linha %i", L);
       exit(-1);
     }
-    if (V == 525){
-      printf("Variavel declarada pela segunda vez - Linha %i", L);
-      exit(-1);
-    }
     /*if (V == 52){
       printf(" - Linha %i", L);
       exit(-1);
     }*/
   }
+  /*
+  if (V == 142){
+    printf (" - Linha %i\n", L);
+    return -1;
+  }
+  */
   //769 ~ 1024 Erros do Compilador Debugger
   if (V >= 769 && V <= 1024){
     if (V == 769){
       printf (" - Linha %i\n", L);
-      exit(-1);
+      return -1;
     }
   }
-  printf ("Problemas com processamento de erros - Erro Nro: %i, Linha: %i\n", V, L);
+  printf ("Problemas com processamento de erros\n");
   exit(1);
 }
