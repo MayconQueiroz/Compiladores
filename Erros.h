@@ -11,7 +11,7 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
   if (V <= 127 && V >= 0){
     if (V == 0){
       printf ("Erro nao catalogado");
-      return 1;
+      exit(1);
     }
     if (V == 1 && L == 0){ //Compilador normal
       printf ("\nChamada do programa: \n");
@@ -186,11 +186,15 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       exit(-1);
     }
     if (V == 275){
-      printf("Numero inteiro esperado para tamanho ou posicao do vetor - Linha %i", L);
+      printf("Numero inteiro esperado para tamanho do vetor - Linha %i", L);
       exit(-1);
     }
     if (V == 276){
-      printf("Colchete direito (]) esperado para definicao do tamanho - Linha %i", L);
+      printf("Colchete direito (]) esperado - Linha %i", L);
+      exit(-1);
+    }
+    if (V == 277){
+      printf("vetores so podem ser indexados com caractere ou inteiro - Linha %i", L);
       exit(-1);
     }
     /*if (V == 27){

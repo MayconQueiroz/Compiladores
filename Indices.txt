@@ -15,17 +15,18 @@ Numero Uni Identificacao (Simbolo(s))
 3584   int Id int nao tabelado
 3840   int Id flt nao tabelado
 
-Utilizacao do inteiro p->info
-0000 0000 0000 0000 0000 0000 0000 0000
- 0    1    2    3    4    5    6    7
-0- Nada
-1- Nada
-2- Nada
-3- Nada
-4- Nada
-5- Tipo do que está sendo armazenado (tabela acima)
-6- Acrescimo para posicao atual de linha (+7)
-7- Acrescimo para posicao atual de linha
+Pilhas Only
+4096  Caractere
+8192  Inteiro
+12288 Id
+
+Utilizacao do short p->info
+0000 0000 0000 0000
+ 0    1    2    3
+1- (Pilhas - indicacao se proximo valor e indice e de qual tipo) Nada
+2- Tipo do que está sendo armazenado (tabela acima)
+3- Acrescimo para posicao atual de linha (+7)
+4- Acrescimo para posicao atual de linha
 
 Utilização do char VAR
 0 0 0 0 0 0 0 0
@@ -33,7 +34,7 @@ Utilização do char VAR
 0- Nada
 1- Nada
 2- Nada
-3- Variavel e vetor
+3- Variavel eh vetor
 4- Variavel ja possui valor atribuido
 5- Char
 6- Float

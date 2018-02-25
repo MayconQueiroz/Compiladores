@@ -10,13 +10,13 @@ union Dado {
 };
 
 struct fila{
-  int info;
+  short info;
   union Dado d;
   TFila* prox;
 };
 
 struct TFila{
-  int info;
+  short info;
   union Dado d;
   TFila* prox;
 };

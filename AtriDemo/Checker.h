@@ -88,8 +88,6 @@ int QueEso(char C){
   if (C == '}') { return 2; }
   if (C == '(') { return 2; }
   if (C == ')') { return 2; }
-  if (C == '[') { return 2; }
-  if (C == ']') { return 2; }
   if (C == ' ') { return 2; }
   if (C == '#') { return 2; }
   if (C == '\n') { return 2; }

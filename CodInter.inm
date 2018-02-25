@@ -1,10 +1,16 @@
 i0[10]
 i1[1]
 i2
-i2i3 = 0 
+i3 = 0 
 i2 = i3
 :L0
 iff i2 < 10 gto L1
 gto L2
 :L1
-i1[i2]
+i4 = i1 + i0
+i1[i2] = i4
+i5 = i2 + 1
+i2 = i5
+gto L0
+:L2
+prt i1[0]

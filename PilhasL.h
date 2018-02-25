@@ -4,49 +4,58 @@
 typedef struct pilha Pilha;
 
 union Dado2 {
-   int i;
+   short i;
    float f;
    char str[4];
 };
 
 struct pilha{
-  int info;
+  short info;
+  int pos;
   union Dado2 d;
   Pilha* prox;
 };
 
 struct Pilha{
   int info;
+  int pos;
   union Dado2 d;
   Pilha* prox;
 };
 
 void pilha_imprime (Pilha* pilha);
 
-Pilha* pilha_insereint(Pilha* pilha, int val, int V){
+//Pilha* pilha - Ponteiro para a pilha_apagar
+//int val - Identificacao para tipagem
+//int V - Valor (posicao do id ou inteiro/float/char armazenado)
+//int P - Vector only (Posicao do vetor a ser acessada (para id's vetores))
+Pilha* pilha_insereint(Pilha* pilha, int val, int V, int P){
   Pilha* novo = (Pilha*) malloc(sizeof(Pilha)); //Reserva um espaco para novo
   novo->info = val; //Atribui a novo, o valor passado
   novo->d.i = V;
+  novo->pos = P;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
   /*printf("Insereint\n");
   pilha_imprime(pilha);*/
   return novo;
 }
 
-Pilha* pilha_insereflt(Pilha* pilha, int val, float V){
+Pilha* pilha_insereflt(Pilha* pilha, int val, float V, int P){
   Pilha* novo = (Pilha*) malloc(sizeof(Pilha)); //Reserva um espaco para novo
   novo->info = val; //Atribui a novo, o valor passado
   novo->d.f = V;
+  novo->pos = P;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
   /*printf("Insereflt\n");
   pilha_imprime(pilha);*/
   return novo;
 }
 
-Pilha* pilha_inserestr(Pilha* pilha, int val, char* V){
+Pilha* pilha_inserestr(Pilha* pilha, int val, char* V, int P){
   Pilha* novo = (Pilha*) malloc(sizeof(Pilha)); //Reserva um espaco para novo
   novo->info = val; //Atribui a novo, o valor passado
   strcpy(novo->d.str, V);
+  novo->pos = P;
   novo->prox = pilha; //Poe o ponteiro para o novo apontando para o pilha anterior da pilha
   /*printf("Inserestr\n");
   pilha_imprime(pilha);*/

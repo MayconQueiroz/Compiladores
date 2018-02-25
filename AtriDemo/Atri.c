@@ -19,9 +19,6 @@ char L[256]; //String para atribuicao de identificadores e numeros
 int Pl; //Posicao da linha (Contado com \n)
 int Pla; //Auxiliar de Pl e curinga apos analise lexica
 int QVAR = 0; //Quantidade de variaveis
-char fltuse = 0; //Uso de floats em atribuicoes
-char Eflt = 0; //Atribuicao a floats
-char urel = 0; //Uso de relacionais e coisas que o float nao pode
 int varpos = 0; //Posicao do var para atribuicao do tamanho do vetor
 int Pla = 0;
 
@@ -201,11 +198,8 @@ void optok(){
 
 //Se for qualquer uma das palavras reservadas retorna 1
 int checkToken(){
-  if (strcmp(L, "chr") == 0 || strcmp(L, "int") == 0 || strcmp(L, "flt") == 0){
-    return 1;
-  }
-  if (strcmp(L, "brk") == 0 || strcmp(L, "scn") == 0 || strcmp(L, "iff") == 0 || strcmp(L, "els") == 0 || strcmp(L, "for") == 0 || strcmp(L, "whl") == 0 || strcmp(L, "prt") == 0){
-    printf("Somente declaracoes sao permitidas para arquivos deste tipo\n");
+  if (strcmp(L, "chr") == 0 || strcmp(L, "int") == 0 || strcmp(L, "flt") == 0 || strcmp(L, "brk") == 0 || strcmp(L, "scn") == 0 || strcmp(L, "iff") == 0 || strcmp(L, "els") == 0 || strcmp(L, "for") == 0 || strcmp(L, "whl") == 0 || strcmp(L, "prt") == 0){
+    printf("Somente atribuicoes sao permitidas nesse tipo de arquivo\n");
     exit(-1);
   }
   return 0;
@@ -348,50 +342,13 @@ TFila* checafprox(TFila* f){
 TFila* stmt(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 512){ //Palavra reservada
-    if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
-      f = decl_stmt(f);
-      f = stmt(f);
-    } else {
-      printf("Somente declaracoes e uma expressao aritmetica\n");
+      printf("Somente uma expressao aritmetica\n");
       exit(-1);
-    }
   } else if (Pla == 256){
     f = atri(f);
   } else {
-    printf("Somente declaracoes e uma expressao aritmetica\n");
+    printf("Somente uma expressao aritmetica\n");
     exit(-1);
-  }
-  return f;
-}
-
-TFila* decl_stmt(TFila* f){
-  char A = 0;
-  if (strcmp(f->d.str, "int") == 0){
-    f = checafprox(f);
-    A = 1;
-  } else if (strcmp(f->d.str, "flt") == 0){
-    f = checafprox(f);
-    A = 2;
-  } else if (strcmp(f->d.str, "chr") == 0){
-    f = checafprox(f);
-    A = 4;
-  } else {
-    printf ("Declaracao de variavel esperada\n");
-    exit(-1);
-  }
-  if (Pla == 256){ //ID
-    VAR[f->d.i] = A;
-    varpos = f->d.i;
-    VVAR[f->d.i] = 1;
-  } else {
-    Erros(259, Pl);
-  }
-  f = checafprox(f);
-  f = d(f);
-  if (Pla == 2816){ //;
-    f = checafprox(f);
-  } else {
-    Erros(260, Pl);
   }
   return f;
 }
@@ -423,51 +380,7 @@ TFila* d(TFila* f){
 void imprimemesmo(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 256){ //id
-    if (VAR[f->d.i] & 1){ //Id
-      printf("i%i", f->d.i);
-    } else if (VAR[f->d.i] & 2){
-      printf("f%i", f->d.i);
-    } else if (VAR[f->d.i] & 4){
-      printf("c%i", f->d.i);
-    } else {
-      printf("Variavel usada na expressao nao foi previamente declarada\n");
-    }
-    if (VAR[f->d.i] & 16){ //Vetor
-      f = checafprox(f);
-      if (Pla == 3072 && strcmp(f->d.str, "[") == 0){ //Colchetes
-        f = checafprox(f);
-        printf("[");
-        if (Pla == 1280){ //Inteiro ou
-          printf("%i", f->d.i);
-          f = checafprox(f);
-          if (Pla == 3072 && strcmp(f->d.str, "]") == 0) { //Colchetes
-            VAR[varpos] = VAR[varpos] | 16;
-            printf("]");
-            return;
-          } else {
-            Erros(276, Pl);
-          }
-        } else if (Pla == 256 && (VAR[f->d.i] & 5)){ //Id int ou chr
-          if (VAR[f->d.i] & 1){ //Id
-            printf("i%i", f->d.i);
-          } else if (VAR[f->d.i] & 4){
-            printf("c%i", f->d.i);
-          }
-          f = checafprox(f);
-          if (Pla == 3072 && strcmp(f->d.str, "]") == 0) { //Colchetes
-            VAR[varpos] = VAR[varpos] | 16;
-            printf("]");
-            return;
-          } else {
-            Erros(276, Pl);
-          }
-        } else {
-          Erros(275, Pl);
-        }
-      } else {
-        Erros(524, Pl);
-      }
-    }
+    printf("id%i", f->d.i);
     return;
   }
   if (Pla == 768){ //ch
@@ -499,15 +412,7 @@ void imprimemesmo(TFila* f){
 void imprimemesmop(Pilha* f){
   Pla = (f->info & 3840);
   if (Pla == 256){ //id
-    if (VAR[f->d.i] & 1){ //Id
-      printf("i%i", f->d.i);
-    } else if (VAR[f->d.i] & 2){
-      printf("f%i", f->d.i);
-    } else if (VAR[f->d.i] & 4){
-      printf("c%i", f->d.i);
-    } else {
-      printf("Variavel usada na expressao nao foi previamente declarada\n");
-    }
+    printf("id%i", f->d.i);
     return;
   }
   if (Pla == 3584){
@@ -588,19 +493,7 @@ TFila* atri(TFila* f){
   TFila* g;
   g = f;
   int QVARold = QVAR;
-  for (i = 0; i < QVAR; i++) {
-    if (VAR[i] == 0){
-      printf("Alguem nao foi declarado\n");
-      exit(-1);
-    }
-  }
   if ((f->info & 3840) == 256){ //Id
-    if (VAR[f->d.i] == 0){ //id ja foi declarado
-      Erros(512, Pl);
-    }
-    if ((VAR[f->d.i] & 2) != 0){ //Marcacao que espera um float
-      Eflt = 1;
-    }
     VAR[f->d.i] = VAR[f->d.i] | 8;
     f = checafprox(f);
     if (Pla == 2560){ //=
@@ -618,18 +511,18 @@ TFila* atri(TFila* f){
     filatods(g, f);
     Pla = (f->info & 3840);
     if (Pla == 256 || Pla == 1280){
-      pilha = pilha_insereint(pilha, f->info, f->d.i);
+      pilha = pilha_insereint(pilha, f->info, f->d.i, -1);
     } else if (Pla == 1536){
-      pilha = pilha_insereflt(pilha, f->info, f->d.f);
+      pilha = pilha_insereflt(pilha, f->info, f->d.f, -1);
     } else if (Pla == 768){
-      pilha = pilha_inserestr(pilha, f->info, f->d.str);
+      pilha = pilha_inserestr(pilha, f->info, f->d.str, -1);
     } else if (Pla == 1792 || Pla == 2048){
       imprimemesmop(pilha);
       printf(" %s ", f->d.str);
       pilha = pilha_remove(pilha);
       imprimemesmop(pilha);
       pilha = pilha_remove(pilha);
-      pilha = pilha_insereint(pilha, 3584, QVARold);
+      pilha = pilha_insereint(pilha, 3584, QVARold, -1);
       printf(" -> ");
       imprimemesmop(pilha);
       printf("\n\n");
