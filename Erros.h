@@ -25,12 +25,8 @@ int Erros(int V, int L){ //Erros de execucao do compilador. V = Codigo do erro. 
       printf("arquivoentrada: Arquivo de entrada .cnm a ser processado (extensao requerida)\n   ");
       printf("opcao         : Mostra o debug de partes especificas do processo\n");
       printf("     1 - Mostra debug da analise lexica\n");
-      printf("     2 - Mostra debug da analise sintatica\n");
-      printf("     3 - Mostra debug das analises lexica e sintatica\n");
-      printf("     4 - Mostra debug da analise semantica\n");
-      printf("     5 - Mostra debug das analises lexica e semantica\n");
-      printf("     6 - Mostra debug das analises sintatica e semantica\n");
-      printf("     7 - Mostra debug das analises lexica, sintatica e semantica\n");
+      printf("     2 - Mostra debug da analise sintatica e semantica\n");
+      printf("     3 - Mostra debug das analises lexica, sintatica e semantica\n");
       return 1;
     }
     if (V == 2){

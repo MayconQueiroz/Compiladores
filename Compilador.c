@@ -548,7 +548,7 @@ void asm_R(TFila* f);
 void asm_o(TFila* f);
 void asm_n(TFila* f);
 //Funcoes sem impressao
-TFila* _checaVar(TFila* f);
+TFila* _(TFila* f);
 TFila* _vetor(TFila* f);
 TFila* _indexa(TFila* f);
 TFila* _atri(TFila* f);
@@ -687,6 +687,7 @@ TFila* mstmt(TFila* f){
     Erros(256, Pl);
   }
   Pla = (f->info & 3840);
+  printf("*********%i*****\n", Pla);
   if (Pla == 512){ //Palavra reservada
     if (strcmp(f->d.str, "int") == 0 || strcmp(f->d.str, "flt") == 0 || strcmp(f->d.str, "chr") == 0){
       f = decl_stmt(f);
@@ -751,6 +752,7 @@ TFila* decl_stmt(TFila* f){
   if (Pla == 2816){ //;
     f = checafprox(f);
   } else {
+    printf("Erro 6\n");
     Erros(260, Pl);
   }
   Decl = f;
@@ -818,6 +820,35 @@ TFila* indexa(TFila* f){
     return checafprox(f);
   } else {
     Erros(277, Pl);
+  }
+}
+
+TFila* n(TFila* f){
+  int i;
+  if (f == NULL){
+    Erros(256, Pl);
+  }
+  Pla = (f->info & 3840);
+  if (Pla == 256){
+    if (VAR[f->d.i] == 0){ //id ja foi declarado
+      Erros(512, Pl);
+    }
+    if (VAR[f->d.i] == 2){ //Uso de float
+      fltuse = 1;
+    }
+    return checaVar(f);
+  } else if (Pla == 768 || Pla == 1280 || Pla == 1536){
+    if (Pla == 1536){
+      fltuse = 1;
+      fprintf(INM, "%f ", f->d.f);
+    } else if (Pla == 1280){
+      fprintf(INM, "%i ", f->d.i);
+    } else if (Pla == 768){
+      fprintf(INM, "\'%c\' ", f->d.str[0]);
+    }
+    return checafprox(f);
+  } else {
+    Erros(269, Pl);
   }
 }
 
@@ -1030,14 +1061,18 @@ TFila* io_stmt(TFila* f){
   if ((f->info & 3840) == 512 && strcmp(f->d.str, "scn") == 0){
     fprintf(INM, "scn ");
     f = checafprox(f);
+    printf("=======%i=====\n", Pla);
     if (Pla == 256){ //Id
       VAR[f->d.i] = VAR[f->d.i] | 8;
-      f = checaVar(f);
+      f = checafprox(f);
+      f = vetor(f);
+      printf("Pla = %i..\n", Pla);
       if (Pla == 2816){ //;
         fprintf(INM, "\n");
         f = checafprox(f);
         return f;
       } else {
+        printf("Erro 3 - f = %s\n", f->d.str);
         Erros(260, Pl);
       }
     } else {
@@ -1047,10 +1082,12 @@ TFila* io_stmt(TFila* f){
     fprintf(INM, "prt ");
     f = checafprox(f);
     f = iol(f);
+    printf("Pla == %i--\n", Pla);
     if (Pla == 2816){ //;
       f = checafprox(f);
       return f;
     } else {
+      printf("Erro 4\n");
       Erros(260, Pl);
     }
   } else if ((f->info & 3840) == 512 && strcmp(f->d.str, "fsc") == 0){
@@ -1061,12 +1098,13 @@ TFila* io_stmt(TFila* f){
     f = checafprox(f);
     if (Pla == 256){ //Id
       VAR[f->d.i] = VAR[f->d.i] | 8;
-      f = checaVar(f);
+      f = (f);
       if (Pla == 2816){ //;
         fprintf(INM, "\n");
         f = checafprox(f);
         return f;
       } else {
+        printf("Erro 5\n");
         Erros(260, Pl);
       }
     } else {
@@ -1143,8 +1181,18 @@ TFila* iol(TFila* f){
     if (Pla == 256 && VAR[f->d.i] == 0){ //id ja foi declarado
       Erros(512, Pl);
     }
-    if (Pla == 256){
-      return checaVar(f);
+    if (Pla == 256){ //Id
+      if (VAR[f->d.i] & 16){ //Eh vetor
+        f = checafprox(f);
+        if (Pla == 3072){ //[
+          f = vetor(f);
+        } else {
+          Erros(0, Pl);
+        }
+      } else { //Nao eh vetor
+        f = checafprox(f);
+      }
+      return f;
     } else if (Pla == 768) { //Caractere
       fprintf(INM, "\'%s\'\n", f->d.str);
       return checafprox(f);
@@ -1174,13 +1222,18 @@ TFila* atri(TFila* f){
   TFila* g;
   TFila* G;
   g = f;
+  fltuse = 0;
+  _atri(f);
   int QVARold = QVAR;
   if ((f->info & 3840) == 256){ //Id
     VAR[f->d.i] = VAR[f->d.i] | 8; //Assegurar que a variavel ja possui valor atribuido
+    f = checafprox(f);
     f = vetor(f);
+    printf("Pla = %i\n", Pla);
     if (Pla == 2560){ //=
       f = checafprox(f);
     } else {
+      printf("Erro 2\n");
       Erros(268, Pl);
     }
   } else {
@@ -1209,21 +1262,25 @@ TFila* atri(TFila* f){
     } else if ((Pla == 1792 && strcmp(f->d.str, "!") != 0) || Pla == 2048){ //Reducao
       pilha = pilha_remove(pilha);
       pilha = pilha_remove(pilha);
-      pilha = pilha_insereint(pilha, 256, QVARold, -1);
+      if (fltuse == 0){ //Nao tem float
+        pilha = pilha_insereint(pilha, 3584, QVARold, -1);
+      } else { //Tem float
+        pilha = pilha_insereint(pilha, 3840, QVARold, -1);
+      }
       QVARold++;
     } else if (Pla == 1792 && strcmp(f->d.str, "!") == 0) { //Sem reducao (!)
       pilha = pilha_remove(pilha);
-      pilha = pilha_insereint(pilha, 256, QVARold, -1);
+      pilha = pilha_insereint(pilha, 3584, QVARold, -1);
       QVARold++;
     } else if (Pla == 2816){ //;
-
+      return checafprox(f);
     }
   }
 }
 
 ///////////////////////////////////////Funcoes subtraco (nao imprimem no arquivo de saida)
 
-TFila* _checaVar(TFila* f){
+TFila* _(TFila* f){
   Pla = (f->info & 3840);
   if (Pla == 256){
     if (VAR[f->d.i] == 0){ //id ja foi declarado
@@ -1233,7 +1290,7 @@ TFila* _checaVar(TFila* f){
     f = _vetor(f);
     return f;
   } else {
-    printf("Chamada incorreta de checaVar - Possivel linha %i\n", Pl);
+    printf("Chamada incorreta de  - Possivel linha %i\n", Pl);
     exit(1);
   }
 }
@@ -1256,7 +1313,7 @@ TFila* _vetor(TFila* f){
 TFila* _indexa(TFila* f){
   if (Pla == 256){
     if (VAR[f->d.i] & 5){ //id
-      f = _checaVar(f);
+      f = _(f);
       return f;
     } else {
       Erros(277, Pl);
@@ -1277,6 +1334,7 @@ TFila* _atri(TFila* f){
   Eflt = 0;
   fltuse = 0;
   urel = 0;
+  printf("----------%i----\n", Pla);
   if ((f->info & 3840) == 256){ //Id
     if (VAR[f->d.i] == 0){ //id ja foi declarado
       Erros(512, Pl);
@@ -1285,7 +1343,7 @@ TFila* _atri(TFila* f){
       Eflt = 1;
     }
     VAR[f->d.i] = VAR[f->d.i] | 8;
-    f = _checaVar(f);
+    f = _(f);
     if (Pla == 2560){ //=
       f = checafprox(f);
       f = _term(f);
@@ -1299,9 +1357,11 @@ TFila* _atri(TFila* f){
         }
         return f;
       } else {
+        printf("Erro 5\n");
         Erros(260, Pl);
       }
     } else {
+      printf("Erro 1\n");
       Erros(268, Pl);
     }
   } else {
@@ -1401,7 +1461,7 @@ TFila* _n(TFila* f){
     if (VAR[f->d.i] == 2){ //Uso de float
       fltuse = 1;
     }
-    return _checaVar(f);
+    return _(f);
   } else if (Pla == 768 || Pla == 1280 || Pla == 1536){
     if (Pla == 1536){
       fltuse = 1;
